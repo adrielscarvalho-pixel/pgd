@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora PGD 3.0</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <div class="header">
+            <div class="logo-container">
+                <svg height="60" viewBox="0 0 130 45" xmlns="http://www.w3.org/2000/svg">
+                    <style>
+                        .ibge-text {
+                            font-family: 'Roboto', sans-serif;
+                            font-weight: 900;
+                            font-style: italic;
+                            fill: #0f4098;
+                            font-size: 38px;
+                        }
+                    </style>
+                    <text x="0" y="35" class="ibge-text">IBGE</text>
+                </svg>
+            </div>
+            <h1>Calculadora PGD 3.0</h1>
+        </div>
+
+        <!-- Seleção de Data -->
+        <div class="row">
+            <div class="col">
+                <label>Mês</label>
+                <select id="mes">
+                    <option value="0">Janeiro</option>
+                    <option value="1">Fevereiro</option>
+                    <option value="2">Março</option>
+                    <option value="3">Abril</option>
+                    <option value="4">Maio</option>
+                    <option value="5">Junho</option>
+                    <option value="6">Julho</option>
+                    <option value="7">Agosto</option>
+                    <option value="8">Setembro</option>
+                    <option value="9">Outubro</option>
+                    <option value="10">Novembro</option>
+                    <option value="11">Dezembro</option>
+                </select>
+            </div>
+            <div class="col">
+                <label>Ano</label>
+                <select id="ano">
+                    <option value="2026">2026</option>
+                    <option value="2027">2027</option>
+                    <option value="2028">2028</option>
+                    <option value="2029">2029</option>
+                    <option value="2030">2030</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Card Assistente -->
+        <div class="forecast-card">
+            <h3>📅 Feriados e Pontos Facultativos Previstos</h3>
+            <ul id="listaFeriados">
+                <!-- Preenchido via JS -->
+            </ul>
+            <div class="alert-yellow">
+                <span>⚠️</span>
+                <span>Importante: Esta lista exibe apenas possíveis feriados e pontos facultativos nacionais. Verifique
+                    no SECAF se há datas locais (municipais/estaduais) na sua lotação antes de preencher a quantidade
+                    abaixo.</span>
+            </div>
+        </div>
+
+        <!-- Inputs Manuais -->
+        <div class="input-group">
+            <label>Sua Meta Padrão</label>
+            <select id="metaPadrao">
+                <option value="64">64 Horas</option>
+                <option value="32">32 Horas</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+            <label>Sua Jornada Diária</label>
+            <select id="jornada">
+                <option value="8">8 Horas</option>
+                <option value="6">6 Horas</option>
+                <option value="4">4 Horas</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+            <label>Total de dias no mês</label>
+            <select id="totalDiasMes">
+                <!-- Auto Preenchido -->
+            </select>
+        </div>
+
+        <div class="input-group">
+            <label>Dias de Férias/Licença (Corridos)</label>
+            <input type="number" id="diasFerias" value="0" min="0" placeholder="0">
+        </div>
+
+        <div class="input-group">
+            <label>Feriados/Facultativos em DIAS ÚTEIS</label>
+            <input type="number" id="feriadosUteis" value="0" min="0" placeholder="0">
+        </div>
+
+        <button class="btn-primary" onclick="calcular()">CALCULAR HORAS PRESENCIAIS</button>
+
+        <div id="resultado">
+            <div class="resumo-box">
+                <span>Sua Meta Presencial (Horas a cumprir na agência):</span>
+                <strong id="metaFinal">0h 00m</strong>
+            </div>
+            <button id="btnCopiar" class="btn-secondary" onclick="copiarResumo()">Copiar Resumo</button>
+        </div>
+
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

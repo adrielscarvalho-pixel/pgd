@@ -1,0 +1,233 @@
+:root {
+    --ibge-blue-dark: #0f4098;
+    --ibge-blue-light: #005b9f;
+    --ibge-yellow: #fecb00;
+    --ibge-gray-bg: #f4f6f8;
+    --white: #ffffff;
+    --result-green: #064e28;
+    /* Dark Green for Result */
+}
+
+body {
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background-color: var(--ibge-gray-bg);
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    color: #333;
+    box-sizing: border-box;
+}
+
+/* PC Container */
+.container {
+    background-color: var(--white);
+    width: 100%;
+    max-width: 500px;
+    margin: 40px 20px;
+    padding: 30px;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+/* Header */
+.header {
+    text-align: center;
+    margin-bottom: 25px;
+    border-bottom: 3px solid var(--ibge-blue-dark);
+    padding-bottom: 15px;
+}
+
+.logo-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 15px;
+}
+
+.header h1 {
+    font-size: 1.4rem;
+    color: var(--ibge-blue-dark);
+    margin: 0;
+}
+
+/* Date Selection Row */
+.row {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.col {
+    flex: 1;
+}
+
+/* Forecast Card - Assistente */
+.forecast-card {
+    background-color: #e3f2fd;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 25px;
+    border-left: 4px solid var(--ibge-blue-light);
+}
+
+.forecast-card h3 {
+    margin: 0 0 10px 0;
+    font-size: 0.95rem;
+    color: var(--ibge-blue-dark);
+}
+
+#listaFeriados {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 15px 0;
+    font-size: 0.9rem;
+}
+
+#listaFeriados li {
+    margin-bottom: 5px;
+    padding-bottom: 5px;
+    border-bottom: 1px dotted rgba(0, 0, 0, 0.1);
+}
+
+.alert-yellow {
+    background-color: #fffde7;
+    border: 1px solid var(--ibge-yellow);
+    border-radius: 6px;
+    padding: 10px;
+    font-size: 0.8rem;
+    color: #8c6d00;
+    display: flex;
+    gap: 8px;
+    line-height: 1.3;
+}
+
+/* Inputs */
+.input-group {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-bottom: 6px;
+    color: #444;
+}
+
+select,
+input {
+    width: 100%;
+    height: 50px;
+    /* Touch friendly */
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 0 12px;
+    font-size: 1rem;
+    box-sizing: border-box;
+    background-color: white;
+}
+
+select:focus,
+input:focus {
+    outline: none;
+    border-color: var(--ibge-blue-light);
+    box-shadow: 0 0 0 2px rgba(0, 91, 159, 0.1);
+}
+
+/* Buttons */
+.btn-primary {
+    width: 100%;
+    height: 54px;
+    background-color: var(--ibge-blue-dark);
+    color: white;
+    font-weight: bold;
+    font-size: 1.1rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s;
+    margin-top: 10px;
+}
+
+.btn-primary:hover {
+    background-color: #0a2e70;
+}
+
+.btn-secondary {
+    width: 100%;
+    height: 48px;
+    background-color: transparent;
+    color: var(--ibge-blue-light);
+    font-weight: 600;
+    border: 2px solid var(--ibge-blue-light);
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 15px;
+    transition: all 0.2s;
+}
+
+.btn-secondary:hover {
+    background-color: #f0f7ff;
+}
+
+/* Result Card */
+#resultado {
+    display: none;
+    margin-top: 30px;
+    animation: slideDown 0.3s;
+}
+
+.resumo-box {
+    background: var(--result-green);
+    color: white;
+    padding: 25px;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(6, 78, 40, 0.3);
+}
+
+.resumo-box span {
+    display: block;
+    font-size: 1rem;
+    opacity: 0.9;
+    margin-bottom: 10px;
+}
+
+.resumo-box strong {
+    font-size: 3.5rem;
+    font-weight: 800;
+    display: block;
+    line-height: 1;
+    margin-bottom: 5px;
+}
+
+/* Mobile Media Query */
+@media screen and (max-width: 600px) {
+    body {
+        background-color: white;
+    }
+
+    .container {
+        max-width: none;
+        width: 100%;
+        margin: 0;
+        border-radius: 0;
+        box-shadow: none;
+        min-height: 100vh;
+        padding: 20px;
+    }
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
