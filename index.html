@@ -3,253 +3,188 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IBGE PGD 2026 | Dashboard Elite</title>
+    <title>Relatório de Metas PGD 2026</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     
     <style>
         :root {
-            /* Cores de Sistema */
             --primary: #3b82f6;
             --primary-glow: rgba(59, 130, 246, 0.5);
             --success: #10b981;
-            --success-glow: rgba(16, 185, 129, 0.5);
-            --bg-app: #f1f5f9;
+            --bg-app: #f8fafc;
             --bg-card: #ffffff;
             --text-main: #0f172a;
             --text-muted: #64748b;
             --border: #e2e8f0;
-            
-            /* Dimensões */
             --sidebar-w: 280px;
-            --radius: 16px;
-            --shadow: 0 10px 30px -10px rgba(0,0,0,0.1);
+            --radius: 12px;
         }
 
         [data-theme="dark"] {
-            --bg-app: #0b0f19;
-            --bg-card: #151b2b;
+            --bg-app: #0f172a;
+            --bg-card: #1e293b;
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
-            --border: #2d3748;
-            --shadow: 0 10px 40px -10px rgba(0,0,0,0.7);
+            --border: #334155;
         }
 
-        * { box-sizing: border-box; outline: none; transition: background 0.3s, color 0.2s, border-color 0.2s; }
+        * { box-sizing: border-box; outline: none; transition: background 0.2s, color 0.2s; }
+        body { margin: 0; font-family: 'Inter', sans-serif; background: var(--bg-app); color: var(--text-main); height: 100vh; overflow: hidden; }
+
+        /* LAYOUT */
+        .app-grid { display: grid; grid-template-columns: var(--sidebar-w) 1fr; height: 100vh; }
         
-        body { 
-            margin: 0; font-family: 'Inter', sans-serif; 
-            background: var(--bg-app); color: var(--text-main); 
-            height: 100vh; overflow: hidden;
-        }
-
-        /* --- LAYOUT GRID --- */
-        .app-grid {
-            display: grid; grid-template-columns: var(--sidebar-w) 1fr;
-            height: 100vh;
-        }
-
-        /* --- SIDEBAR --- */
+        /* SIDEBAR */
         .sidebar {
-            background: var(--bg-card); padding: 30px;
-            border-right: 1px solid var(--border);
-            display: flex; flex-direction: column; justify-content: space-between;
-            z-index: 10;
+            background: var(--bg-card); padding: 30px; border-right: 1px solid var(--border);
+            display: flex; flex-direction: column; justify-content: space-between; overflow-y: auto;
         }
 
-        .logo-area { display: flex; align-items: center; gap: 15px; margin-bottom: 40px; }
+        /* LOGO RESTAURADO */
+        .logo-area { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
         .logo-symbol {
-            width: 40px; height: 40px; background: linear-gradient(135deg, var(--primary), #2563eb);
+            width: 42px; height: 42px; background: linear-gradient(135deg, var(--primary), #2563eb);
             color: white; border-radius: 10px; display: grid; place-items: center;
             font-weight: 900; font-style: italic; box-shadow: 0 4px 15px var(--primary-glow);
+            flex-shrink: 0;
         }
-        .logo-text h1 { margin: 0; font-size: 1.1rem; font-weight: 800; letter-spacing: -0.5px; }
+        .logo-text h1 { font-size: 1.2rem; margin: 0; font-weight: 800; color: var(--text-main); letter-spacing: -0.5px; }
         .logo-text p { margin: 0; font-size: 0.75rem; color: var(--text-muted); font-weight: 600; }
 
-        .credit-box {
-            font-size: 0.75rem; color: var(--text-muted); text-align: center;
-            padding-top: 20px; border-top: 1px solid var(--border); margin-top: 10px;
-        }
-        .credit-box strong { color: var(--primary); font-weight: 700; }
+        /* MAIN */
+        .main-content { padding: 30px; overflow-y: auto; display: grid; grid-template-columns: 350px 1fr; gap: 30px; }
 
-        /* --- MAIN CONTENT --- */
-        .main-content {
-            padding: 30px; overflow-y: auto;
-            display: grid; grid-template-columns: 350px 1fr; gap: 30px;
-        }
-
-        /* Card Styles */
-        .panel {
-            background: var(--bg-card); border-radius: var(--radius);
-            padding: 25px; border: 1px solid var(--border); box-shadow: var(--shadow);
-        }
-        .panel-title {
-            font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px;
-            color: var(--text-muted); font-weight: 700; margin-bottom: 20px;
-            display: flex; align-items: center; gap: 8px;
-        }
-
-        /* Inputs */
-        .input-group { margin-bottom: 20px; }
-        label { display: block; font-size: 0.9rem; font-weight: 600; margin-bottom: 8px; color: var(--text-main); }
+        /* CARDS & INPUTS */
+        .panel { background: var(--bg-card); border-radius: var(--radius); padding: 20px; border: 1px solid var(--border); }
+        .panel-title { font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: var(--text-muted); margin-bottom: 15px; display: block;}
         
-        /* Helper text melhorado para idosos */
-        .field-desc { 
-            font-size: 0.8rem; color: var(--text-muted); margin-top: 6px; 
-            display: block; line-height: 1.4; background: var(--bg-app); 
-            padding: 8px; border-radius: 6px; border-left: 3px solid var(--border);
-        }
+        .input-group { margin-bottom: 15px; }
+        label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 5px; }
+        .field-desc { font-size: 0.75rem; color: var(--text-muted); display: block; margin-top: 4px; line-height: 1.3; background: rgba(0,0,0,0.03); padding: 5px; border-radius: 4px;}
         
         input, select {
-            width: 100%; padding: 12px; background: var(--bg-app); border: 1px solid var(--border);
-            border-radius: 8px; color: var(--text-main); font-family: inherit; font-size: 0.95rem;
-        }
-        input:focus, select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
-
-        .divider { height: 1px; background: var(--border); margin: 25px 0; }
-
-        /* Painel Avançado */
-        .adv-panel {
-            background: rgba(59, 130, 246, 0.03); border: 1px dashed var(--border);
-            border-radius: 12px; padding: 15px;
-        }
-        .adv-header { color: var(--primary); font-size: 0.75rem; font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; gap: 5px; }
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-
-        /* --- RESULTADOS --- */
-        .month-display {
-            display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid var(--border);
-        }
-        .month-display h2 { margin: 0; font-size: 1.8rem; letter-spacing: -1px; }
-
-        .results-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-
-        .res-card {
-            background: var(--bg-card); border: 1px solid var(--border);
-            border-radius: 20px; padding: 0; /* Padding removido para layout interno */
-            text-align: center; position: relative; overflow: hidden;
-            display: flex; flex-direction: column;
+            width: 100%; padding: 10px; background: var(--bg-app); border: 1px solid var(--border);
+            border-radius: 6px; color: var(--text-main); font-family: inherit;
         }
         
-        /* Cabeçalho do Card (NOVO) */
-        .card-heading {
-            padding: 20px;
-            border-bottom: 1px solid var(--border);
-            background: linear-gradient(to bottom, var(--bg-app), var(--bg-card));
+        /* RESULTADOS */
+        .month-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid var(--border); }
+        .month-header h2 { margin: 0; font-size: 1.5rem; }
+
+        .results-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .res-card {
+            background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px;
+            overflow: hidden; display: flex; flex-direction: column;
         }
-        .card-heading h3 { margin: 0; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); }
-        .card-heading strong { display: block; font-size: 1.1rem; color: var(--text-main); margin-top: 5px; font-weight: 800; }
+        .card-head { padding: 15px; background: rgba(0,0,0,0.02); border-bottom: 1px solid var(--border); text-align: center; }
+        .card-head h3 { margin: 0; font-size: 0.8rem; text-transform: uppercase; color: var(--text-muted); }
+        .card-head strong { font-size: 1rem; color: var(--text-main); }
 
-        .card-body { padding: 30px 20px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; align-items: center;}
+        .card-body { padding: 20px; text-align: center; flex-grow: 1; display: flex; flex-direction: column; align-items: center; }
+        
+        /* Gráfico */
+        .chart-wrap { position: relative; width: 120px; height: 120px; margin-bottom: 15px; }
+        .chart-txt { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-weight: 800; font-size: 1.4rem; }
+        .circle-bg { stroke: var(--border); }
+        .circle-fg { transition: stroke-dashoffset 0.5s; stroke-linecap: round; }
+        .tec .circle-fg { stroke: var(--primary); }
+        .pra .circle-fg { stroke: var(--success); }
 
-        /* Efeito de brilho no topo */
-        .res-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; z-index: 5; }
-        .res-card.tec::before { background: var(--primary); box-shadow: 0 0 10px var(--primary); }
-        .res-card.pra::before { background: var(--success); box-shadow: 0 0 10px var(--success); }
-
-        /* O GRÁFICO (SVG) */
-        .chart-wrapper { position: relative; width: 150px; height: 150px; margin: 0 auto 20px auto; }
-        .progress-ring__circle-bg { stroke: var(--border); }
-        .progress-ring__circle {
-            transition: stroke-dashoffset 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-            transform: rotate(-90deg); transform-origin: 50% 50%; stroke-linecap: round;
+        /* Fórmula */
+        .formula-box {
+            background: var(--bg-app); border: 1px solid var(--border); border-radius: 6px;
+            padding: 10px; width: 100%; text-align: left;
         }
-        /* Glow Effect no SVG */
-        .tec .progress-ring__circle { stroke: var(--primary); filter: drop-shadow(0 0 4px var(--primary-glow)); }
-        .pra .progress-ring__circle { stroke: var(--success); filter: drop-shadow(0 0 4px var(--success-glow)); }
-
-        /* Texto dentro do Gráfico */
-        .chart-content {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            display: flex; flex-direction: column; align-items: center;
-        }
-        .chart-hours { font-size: 1.8rem; font-weight: 800; line-height: 1; letter-spacing: -1px; }
-        .chart-label { font-size: 0.65rem; text-transform: uppercase; font-weight: 700; color: var(--text-muted); margin-top: 5px; }
-
-        /* Caixa de Fórmula */
-        .formula-container {
-            background: var(--bg-app); border-radius: 8px; padding: 12px; width: 100%;
-            border: 1px solid var(--border); text-align: left;
-        }
-        .formula-title { font-size: 0.65rem; text-transform: uppercase; font-weight: 700; color: var(--text-muted); margin-bottom: 4px; display: block; }
-        .formula-math { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--text-muted); word-wrap: break-word; }
+        .formula-math { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--text-muted); }
         .formula-math strong { color: var(--text-main); }
 
-        /* Botões */
-        .action-bar { margin-top: 30px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        /* AÇÕES */
+        .actions { margin-top: 25px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
         .btn {
-            padding: 15px; border: none; border-radius: 12px; font-weight: 600; cursor: pointer;
-            display: flex; align-items: center; justify-content: center; gap: 8px;
-            font-size: 0.9rem; transition: transform 0.1s;
+            padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;
+            display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 0.8rem;
         }
-        .btn:active { transform: scale(0.98); }
-        .btn-copy { background: var(--bg-app); color: var(--text-main); border: 1px solid var(--border); }
-        .btn-copy:hover { border-color: var(--primary); color: var(--primary); }
-        .btn-whatsapp { background: #25D366; color: white; box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3); }
+        .btn-copy { background: white; border: 1px solid var(--border); color: var(--text-main); }
+        .btn-print { background: var(--text-main); color: var(--bg-app); }
+        .btn-zap { background: #25D366; color: white; }
 
-        /* Dark Mode Switch */
-        .theme-switch-wrapper { display: flex; align-items: center; gap: 10px; margin-top: auto; padding-top: 20px; border-top: 1px solid var(--border); }
-        .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
+        /* --- ESTILOS DE IMPRESSÃO --- */
+        @media print {
+            @page { margin: 1cm; size: A4; }
+            body { background: white; color: black; height: auto; overflow: visible; }
+            .sidebar, .actions, .theme-switch-wrapper, .disclaimer, .field-desc { display: none !important; }
+            .app-grid { display: block; }
+            .main-content { display: block; padding: 0; }
+            .panel { border: none; padding: 0; margin-bottom: 20px; box-shadow: none; }
+            .input-group input, .input-group select { border: none; padding: 0; font-weight: bold; background: none; }
+            .input-group label { display: inline-block; color: #666; margin-right: 10px; }
+            .print-header { display: block !important; margin-bottom: 30px; border-bottom: 2px solid #000; padding-bottom: 10px; }
+            .results-grid { grid-template-columns: 1fr 1fr; gap: 40px; }
+            .res-card { border: 1px solid #ccc; break-inside: avoid; }
+            .card-head { background: #f0f0f0 !important; -webkit-print-color-adjust: exact; }
+            .signature-area { display: block !important; margin-top: 50px; page-break-inside: avoid; }
+        }
+
+        .print-header, .signature-area { display: none; }
+        
+        /* Dark Mode Toggle */
+        .switch-wrap { margin-top: auto; padding-top: 20px; display: flex; align-items: center; gap: 10px; }
+        .switch { position: relative; width: 40px; height: 22px; }
         .switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #cbd5e1; transition: .4s; border-radius: 34px; }
-        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; border-radius: 34px; transition: .4s; }
+        .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px; background-color: white; border-radius: 50%; transition: .4s; }
         input:checked + .slider { background-color: var(--primary); }
-        input:checked + .slider:before { transform: translateX(20px); }
-
-        /* Responsividade */
-        @media (max-width: 950px) {
+        input:checked + .slider:before { transform: translateX(18px); }
+        
+        @media (max-width: 900px) {
             .app-grid { grid-template-columns: 1fr; height: auto; overflow: visible; }
-            .sidebar { flex-direction: row; align-items: center; padding: 15px 20px; position: sticky; top: 0; border-bottom: 1px solid var(--border); border-right: none; }
-            .theme-switch-wrapper { margin: 0; padding: 0; border: 0; }
-            .theme-label, .disclaimer, .credit-box { display: none; }
-            .main-content { grid-template-columns: 1fr; padding: 20px; overflow: visible; }
-            .results-grid { grid-template-columns: 1fr; }
+            .sidebar { border-right: none; border-bottom: 1px solid var(--border); padding: 20px; }
+            .main-content { grid-template-columns: 1fr; padding: 15px; }
+            .actions { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
 
+    <div class="print-header">
+        <h1 style="margin:0">Relatório de Metas PGD - IBGE</h1>
+        <p style="margin:5px 0 0 0">Memória de cálculo de horas presenciais</p>
+    </div>
+
     <div class="app-grid">
         <aside class="sidebar">
-            <div>
-                <div class="logo-area">
-                    <div class="logo-symbol">IBGE</div>
-                    <div class="logo-text">
-                        <h1>PGD 2026</h1>
-                        <p>Dashboard Pro</p>
-                    </div>
-                </div>
-
-                <div class="disclaimer">
-                    <small style="color: #d97706; display: flex; align-items: center; gap: 5px;">
-                        <i class="ph ph-warning-circle"></i> Versão Não Oficial
-                    </small>
-                    <p style="font-size: 0.7rem; color: var(--text-muted); margin-top: 5px; line-height: 1.4;">
-                        Valide sempre os dados com o SECAF e chefia imediata.
-                    </p>
+            <div class="logo-area">
+                <div class="logo-symbol">IBGE</div>
+                <div class="logo-text">
+                    <h1>PGD 2026</h1>
+                    <p>Dashboard Calc</p>
                 </div>
             </div>
 
-            <div style="margin-top: auto;">
-                <div class="theme-switch-wrapper">
-                    <span class="theme-label" style="font-size: 0.85rem; font-weight: 600;">Modo Escuro</span>
-                    <label class="switch">
-                        <input type="checkbox" id="checkbox">
-                        <span class="slider"></span>
-                    </label>
+            <div class="disclaimer">
+                <div style="font-size: 0.7rem; color: #d97706; margin-bottom: 15px; background: #fffbeb; padding: 10px; border-radius: 6px; border: 1px solid #fcd34d;">
+                    ⚠️ <strong>Uso Interno:</strong> Ferramenta de apoio. Valide os cálculos no SECAF.
                 </div>
-                <div class="credit-box">
-                    Desenvolvido por <strong>Adriel</strong>
-                </div>
+            </div>
+
+            <div class="switch-wrap">
+                <span style="font-size: 0.8rem; font-weight: 600;">Modo Escuro</span>
+                <label class="switch">
+                    <input type="checkbox" id="checkbox">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            
+            <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 15px; text-align: center; border-top: 1px solid var(--border); padding-top: 10px;">
+                Desenvolvido por <strong>Adriel</strong>
             </div>
         </aside>
 
         <main class="main-content">
-            
             <section class="panel">
-                <div class="panel-title"><i class="ph ph-sliders-horizontal"></i> Configuração</div>
+                <span class="panel-title"><i class="ph ph-sliders"></i> Parâmetros do Mês</span>
                 
                 <div class="input-group">
                     <label>Mês de Referência</label>
@@ -264,111 +199,113 @@
                     </select>
                 </div>
 
-                <div class="divider"></div>
+                <div style="border-top: 1px solid var(--border); margin: 20px 0;"></div>
 
-                <div class="panel-title"><i class="ph ph-airplane-tilt"></i> Registro de Afastamentos</div>
+                <span class="panel-title"><i class="ph ph-calendar-x"></i> Registro de Ausências</span>
                 
                 <div class="input-group">
-                    <label>1. Férias, Licenças e Recessos (Total)</label>
-                    <input type="number" id="feriasCorridos" value="0" min="0" placeholder="0">
-                    <span class="field-desc">
-                        Some todos os dias de ausência no mês (férias, licenças médicas, abonos, recesso de final de ano, casamento, etc).
-                    </span>
-                </div>
-                
-                <div class="input-group">
-                    <label>2. Desses dias, quantos caem em Dias Úteis?</label>
-                    <input type="number" id="feriasUteis" value="0" min="0" placeholder="0">
-                    <span class="field-desc">
-                        Conte apenas os dias de Segunda a Sexta-feira que não sejam feriados.
-                    </span>
+                    <label>Férias, Licenças e Recessos (Total)</label>
+                    <input type="number" id="feriasCorridos" value="0" min="0">
+                    <span class="field-desc">Total de dias fora (inclui fins de semana). Ex: 30 dias de férias.</span>
                 </div>
 
-                <div class="adv-panel">
-                    <div class="adv-header"><i class="ph ph-calendar-check"></i> CALENDÁRIO BASE (Editável)</div>
-                    <div class="grid-2">
+                <div class="input-group">
+                    <label>Desses, quantos são Dias Úteis?</label>
+                    <input type="number" id="feriasUteis" value="0" min="0">
+                    <span class="field-desc">Apenas dias de Seg a Sex que não sejam feriados.</span>
+                </div>
+
+                <div style="background: rgba(0,0,0,0.03); padding: 10px; border-radius: 8px; margin-top: 20px;">
+                    <label style="font-size: 0.75rem; color: var(--primary);">🗓️ Calendário Base (Automático)</label>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 5px;">
                         <div>
-                            <label style="font-size: 0.75rem;">Dias Úteis</label>
-                            <input type="number" id="totalDiasUteis" style="padding: 8px;">
+                            <label style="font-size: 0.7rem;">Dias Úteis</label>
+                            <input type="number" id="totalDiasUteis" style="font-weight: bold;">
                         </div>
                         <div>
-                            <label style="font-size: 0.75rem;">Feriados</label>
-                            <input type="number" id="totalFeriados" style="padding: 8px;">
+                            <label style="font-size: 0.7rem;">Feriados</label>
+                            <input type="number" id="totalFeriados" style="font-weight: bold;">
                         </div>
                     </div>
                 </div>
             </section>
 
-            <section class="panel results-section">
-                <div class="month-display">
+            <section>
+                <div class="month-header">
                     <div>
                         <h2 id="displayMesNome">Janeiro</h2>
-                        <span id="displayMesDetalhe" style="color: var(--text-muted); font-size: 0.9rem;">...</span>
+                        <small id="displayMesDetalhe" style="color: var(--text-muted)">...</small>
                     </div>
-                    <i class="ph ph-calendar" style="font-size: 2rem; color: var(--primary); opacity: 0.2;"></i>
                 </div>
 
                 <div class="results-grid">
-                    
                     <div class="res-card tec">
-                        <div class="card-heading">
+                        <div class="card-head">
                             <h3>Meta Presencial</h3>
-                            <strong>Cálculo por Dias Úteis</strong>
+                            <strong>Cálculo Dias Úteis</strong>
                         </div>
-                        
                         <div class="card-body">
-                            <div class="chart-wrapper">
-                                <svg class="progress-ring" width="150" height="150">
-                                    <circle class="progress-ring__circle-bg" stroke="currentColor" stroke-width="8" fill="transparent" r="65" cx="75" cy="75"/>
-                                    <circle id="ringTecnico" class="progress-ring__circle" stroke="currentColor" stroke-width="8" fill="transparent" r="65" cx="75" cy="75"/>
+                            <div class="chart-wrap">
+                                <svg width="120" height="120">
+                                    <circle class="circle-bg" stroke-width="8" fill="none" r="54" cx="60" cy="60"/>
+                                    <circle id="ringTecnico" class="circle-fg" stroke-width="8" fill="none" r="54" cx="60" cy="60"/>
                                 </svg>
-                                <div class="chart-content">
-                                    <span class="chart-hours" id="resTecnico">0h</span>
-                                </div>
+                                <span class="chart-txt" id="resTecnico">0h</span>
                             </div>
-
-                            <div class="formula-container">
-                                <span class="formula-title">Memória de Cálculo</span>
-                                <div class="formula-math" id="formulaTecnicoMath">Loading...</div>
-                                <div style="margin-top:5px; font-size: 0.7rem; color: var(--text-muted);" id="detalheTecnico">...</div>
+                            <div class="formula-box">
+                                <div style="font-size: 0.65rem; font-weight: 700; margin-bottom: 4px;">MEMÓRIA DE CÁLCULO</div>
+                                <div class="formula-math" id="formulaTecnicoMath">...</div>
+                                <div style="font-size: 0.65rem; margin-top: 4px;" id="detalheTecnico">...</div>
                             </div>
                         </div>
                     </div>
 
                     <div class="res-card pra">
-                        <div class="card-heading">
+                        <div class="card-head">
                             <h3>Meta Presencial</h3>
-                            <strong>Cálculo por Dias Corridos</strong>
+                            <strong>Cálculo Dias Corridos</strong>
                         </div>
-
                         <div class="card-body">
-                            <div class="chart-wrapper">
-                                <svg class="progress-ring" width="150" height="150">
-                                    <circle class="progress-ring__circle-bg" stroke="currentColor" stroke-width="8" fill="transparent" r="65" cx="75" cy="75"/>
-                                    <circle id="ringPratico" class="progress-ring__circle" stroke="currentColor" stroke-width="8" fill="transparent" r="65" cx="75" cy="75"/>
+                            <div class="chart-wrap">
+                                <svg width="120" height="120">
+                                    <circle class="circle-bg" stroke-width="8" fill="none" r="54" cx="60" cy="60"/>
+                                    <circle id="ringPratico" class="circle-fg" stroke-width="8" fill="none" r="54" cx="60" cy="60"/>
                                 </svg>
-                                <div class="chart-content">
-                                    <span class="chart-hours" id="resPratico">0h</span>
-                                </div>
+                                <span class="chart-txt" id="resPratico">0h</span>
                             </div>
-
-                            <div class="formula-container">
-                                <span class="formula-title">Memória de Cálculo</span>
-                                <div class="formula-math" id="formulaPraticoMath">Loading...</div>
-                                <div style="margin-top:5px; font-size: 0.7rem; color: var(--text-muted);" id="detalhePratico">...</div>
+                            <div class="formula-box">
+                                <div style="font-size: 0.65rem; font-weight: 700; margin-bottom: 4px;">MEMÓRIA DE CÁLCULO</div>
+                                <div class="formula-math" id="formulaPraticoMath">...</div>
+                                <div style="font-size: 0.65rem; margin-top: 4px;" id="detalhePratico">...</div>
                             </div>
                         </div>
                     </div>
-
                 </div>
 
-                <div class="action-bar">
-                    <button class="btn btn-copy" onclick="copiarResumo()">
-                        <i class="ph ph-copy"></i> Copiar Resumo
+                <div class="actions">
+                    <button class="btn btn-copy" onclick="copiarResumoDetalhado()">
+                        <i class="ph ph-copy"></i> Copiar Texto
                     </button>
-                    <button class="btn btn-whatsapp" onclick="compartilharWhatsapp()">
+                    <button class="btn btn-print" onclick="window.print()">
+                        <i class="ph ph-printer"></i> Imprimir / PDF
+                    </button>
+                    <button class="btn btn-zap" onclick="compartilharWhatsappDetalhado()">
                         <i class="ph ph-whatsapp-logo"></i> WhatsApp
                     </button>
+                </div>
+
+                <div class="signature-area">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 50px;">
+                        <div style="border-top: 1px solid #000; margin-top: 50px; padding-top: 10px; text-align: center;">
+                            Assinatura do Servidor
+                        </div>
+                        <div style="border-top: 1px solid #000; margin-top: 50px; padding-top: 10px; text-align: center;">
+                            Chefia Imediata
+                        </div>
+                    </div>
+                    <p style="font-size: 0.7rem; text-align: center; margin-top: 30px; color: #666;">
+                        Relatório gerado em: <span id="dataImpressao"></span>
+                    </p>
                 </div>
             </section>
         </main>
@@ -404,7 +341,7 @@
                 });
             });
 
-            // Dark Mode Init & Listener
+            // Dark Mode
             const themeToggle = document.getElementById('checkbox');
             if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
                 themeToggle.checked = true;
@@ -413,6 +350,9 @@
             themeToggle.addEventListener('change', (e) => {
                 document.documentElement.setAttribute('data-theme', e.target.checked ? 'dark' : 'light');
             });
+
+            // Data atual para impressão
+            document.getElementById('dataImpressao').innerText = new Date().toLocaleDateString('pt-BR');
 
             carregarDadosMes();
         });
@@ -444,7 +384,6 @@
             
             let feriasCorridos = Math.max(0, parseInt(document.getElementById('feriasCorridos').value) || 0);
             let feriasUteis = Math.max(0, parseInt(document.getElementById('feriasUteis').value) || 0);
-            
             const totalDiasUteis = parseInt(document.getElementById('totalDiasUteis').value);
             const totalFeriados = parseInt(document.getElementById('totalFeriados').value);
 
@@ -469,25 +408,17 @@
         }
 
         function atualizarCard(tipo, valor, metaMax, diasAtivos, diasTotal, formulaHTML) {
-            // Atualiza Texto
             document.getElementById(`res${tipo}`).innerText = formatarHoras(valor);
-            
-            // Atualiza ID correto
             document.getElementById(`formula${tipo}Math`).innerHTML = formulaHTML;
-            document.getElementById(`detalhe${tipo}`).innerText = `Base: ${diasAtivos} de ${diasTotal} dias considerados`;
+            document.getElementById(`detalhe${tipo}`).innerText = `Considerou ${diasAtivos} de ${diasTotal} dias disponíveis.`;
 
-            // Atualiza Gráfico Circular
             const circle = document.getElementById(`ring${tipo}`);
             const radius = circle.r.baseVal.value;
             const circumference = radius * 2 * Math.PI;
-            
             circle.style.strokeDasharray = `${circumference} ${circumference}`;
             
-            // Lógica do progresso
             let percent = valor / metaMax;
-            if (percent > 1) percent = 1; 
-            if (percent < 0) percent = 0;
-
+            if (percent > 1) percent = 1; if (percent < 0) percent = 0;
             const offset = circumference - (percent * circumference);
             circle.style.strokeDashoffset = offset;
         }
@@ -498,18 +429,48 @@
             return `${h}h ${m < 10 ? '0'+m : m}m`;
         }
 
-        function gerarTexto() {
-            return `*PGD ${document.getElementById('displayMesNome').innerText}*\n🎯 Téc: ${document.getElementById('resTecnico').innerText}\n📅 Prát: ${document.getElementById('resPratico').innerText}`;
+        // --- RELATÓRIO DETALHADO ---
+        function gerarTextoDetalhado() {
+            const mes = document.getElementById('displayMesNome').innerText;
+            const meta = document.getElementById('metaPadrao').options[document.getElementById('metaPadrao').selectedIndex].text;
+            
+            const diasUteis = document.getElementById('totalDiasUteis').value;
+            const feriados = document.getElementById('totalFeriados').value;
+            
+            const feriasC = document.getElementById('feriasCorridos').value;
+            const feriasU = document.getElementById('feriasUteis').value;
+            
+            const resTec = document.getElementById('resTecnico').innerText;
+            const resPra = document.getElementById('resPratico').innerText;
+
+            return `📋 *RELATÓRIO DE METAS PGD - ${mes.toUpperCase()}*\n\n` +
+                   `⚙️ *Parâmetros do Mês:*\n` +
+                   `- Meta Padrão: ${meta}\n` +
+                   `- Dias Úteis no Mês: ${diasUteis}\n` +
+                   `- Feriados descontados: ${feriados}\n\n` +
+                   `🏖️ *Afastamentos (Férias/Licenças):*\n` +
+                   `- Dias Totais Fora: ${feriasC}\n` +
+                   `- Impacto em Dias Úteis: ${feriasU}\n\n` +
+                   `🎯 *CÁLCULO FINAL DE METAS:*\n` +
+                   `✅ *Pelo Cálculo de Dias Úteis: ${resTec}*\n` +
+                   `(Recomendado tecnicamente)\n\n` +
+                   `☑️ *Pelo Cálculo de Dias Corridos: ${resPra}*\n` +
+                   `(Alternativo/Proporcional)\n\n` +
+                   `_Gerado em ${new Date().toLocaleDateString()}_`;
         }
-        function copiarResumo() { 
-            navigator.clipboard.writeText(gerarTexto()).then(() => {
+
+        function copiarResumoDetalhado() { 
+            navigator.clipboard.writeText(gerarTextoDetalhado()).then(() => {
                 const btn = document.querySelector('.btn-copy');
-                const original = btn.innerHTML;
+                const htmlOrig = btn.innerHTML;
                 btn.innerHTML = '<i class="ph ph-check"></i> Copiado!';
-                setTimeout(() => btn.innerHTML = original, 2000);
+                setTimeout(() => btn.innerHTML = htmlOrig, 2000);
             }); 
         }
-        function compartilharWhatsapp() { window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(gerarTexto())}`, '_blank'); }
+        
+        function compartilharWhatsappDetalhado() { 
+            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(gerarTextoDetalhado())}`, '_blank'); 
+        }
     </script>
 </body>
 </html>
