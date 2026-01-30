@@ -1,136 +1,491 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora PGD 2026 (IBGE)</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <title>IBGE PGD 2026 | Dashboard Elite</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    
+    <style>
+        :root {
+            /* Cores de Sistema */
+            --primary: #3b82f6;
+            --primary-glow: rgba(59, 130, 246, 0.5);
+            --success: #10b981;
+            --success-glow: rgba(16, 185, 129, 0.5);
+            --bg-app: #f1f5f9;
+            --bg-card: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            
+            /* Dimensões */
+            --sidebar-w: 280px;
+            --radius: 16px;
+            --shadow: 0 10px 30px -10px rgba(0,0,0,0.1);
+        }
+
+        [data-theme="dark"] {
+            --bg-app: #0b0f19;
+            --bg-card: #151b2b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: #2d3748;
+            --shadow: 0 10px 40px -10px rgba(0,0,0,0.7);
+        }
+
+        * { box-sizing: border-box; outline: none; transition: background 0.3s, color 0.2s, border-color 0.2s; }
+        
+        body { 
+            margin: 0; font-family: 'Inter', sans-serif; 
+            background: var(--bg-app); color: var(--text-main); 
+            height: 100vh; overflow: hidden;
+        }
+
+        /* --- LAYOUT GRID --- */
+        .app-grid {
+            display: grid; grid-template-columns: var(--sidebar-w) 1fr;
+            height: 100vh;
+        }
+
+        /* --- SIDEBAR --- */
+        .sidebar {
+            background: var(--bg-card); padding: 30px;
+            border-right: 1px solid var(--border);
+            display: flex; flex-direction: column; justify-content: space-between;
+            z-index: 10;
+        }
+
+        .logo-area { display: flex; align-items: center; gap: 15px; margin-bottom: 40px; }
+        .logo-symbol {
+            width: 40px; height: 40px; background: linear-gradient(135deg, var(--primary), #2563eb);
+            color: white; border-radius: 10px; display: grid; place-items: center;
+            font-weight: 900; font-style: italic; box-shadow: 0 4px 15px var(--primary-glow);
+        }
+        .logo-text h1 { margin: 0; font-size: 1.1rem; font-weight: 800; letter-spacing: -0.5px; }
+        .logo-text p { margin: 0; font-size: 0.75rem; color: var(--text-muted); font-weight: 600; }
+
+        .disclaimer {
+            margin-bottom: 20px;
+        }
+
+        .credit-box {
+            font-size: 0.75rem; color: var(--text-muted); text-align: center;
+            padding-top: 20px; border-top: 1px solid var(--border); margin-top: 10px;
+        }
+        .credit-box strong { color: var(--primary); font-weight: 700; }
+
+        /* --- MAIN CONTENT --- */
+        .main-content {
+            padding: 30px; overflow-y: auto;
+            display: grid; grid-template-columns: 350px 1fr; gap: 30px;
+        }
+
+        /* Card Styles */
+        .panel {
+            background: var(--bg-card); border-radius: var(--radius);
+            padding: 25px; border: 1px solid var(--border); box-shadow: var(--shadow);
+        }
+        .panel-title {
+            font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px;
+            color: var(--text-muted); font-weight: 700; margin-bottom: 20px;
+            display: flex; align-items: center; gap: 8px;
+        }
+
+        /* Inputs */
+        .input-group { margin-bottom: 15px; }
+        label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 8px; }
+        .field-desc { font-size: 0.75rem; color: var(--text-muted); margin-top: 4px; display: block; }
+        
+        input, select {
+            width: 100%; padding: 12px; background: var(--bg-app); border: 1px solid var(--border);
+            border-radius: 8px; color: var(--text-main); font-family: inherit; font-size: 0.9rem;
+        }
+        input:focus, select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
+
+        .divider { height: 1px; background: var(--border); margin: 25px 0; }
+
+        /* Painel Avançado (Always Visible) */
+        .adv-panel {
+            background: rgba(59, 130, 246, 0.03); border: 1px dashed var(--border);
+            border-radius: 12px; padding: 15px;
+        }
+        .adv-header { color: var(--primary); font-size: 0.75rem; font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; gap: 5px; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+        /* --- RESULTADOS --- */
+        .month-display {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid var(--border);
+        }
+        .month-display h2 { margin: 0; font-size: 1.8rem; letter-spacing: -1px; }
+
+        .results-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+        .res-card {
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: 20px; padding: 30px 20px; text-align: center;
+            position: relative; overflow: hidden;
+            display: flex; flex-direction: column; justify-content: space-between;
+        }
+        /* Efeito de brilho no topo do card */
+        .res-card::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px;
+        }
+        .res-card.tec::before { background: var(--primary); box-shadow: 0 0 10px var(--primary); }
+        .res-card.pra::before { background: var(--success); box-shadow: 0 0 10px var(--success); }
+
+        /* O GRÁFICO (SVG) */
+        .chart-wrapper {
+            position: relative; width: 160px; height: 160px; margin: 0 auto 20px auto;
+        }
+        .progress-ring__circle-bg { stroke: var(--border); }
+        .progress-ring__circle {
+            transition: stroke-dashoffset 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: rotate(-90deg); transform-origin: 50% 50%;
+            stroke-linecap: round;
+        }
+        /* Glow Effect no SVG */
+        .tec .progress-ring__circle { stroke: var(--primary); filter: drop-shadow(0 0 4px var(--primary-glow)); }
+        .pra .progress-ring__circle { stroke: var(--success); filter: drop-shadow(0 0 4px var(--success-glow)); }
+
+        /* Texto dentro do Gráfico */
+        .chart-content {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            display: flex; flex-direction: column; align-items: center;
+        }
+        .chart-hours { font-size: 1.8rem; font-weight: 800; line-height: 1; letter-spacing: -1px; }
+        .chart-label { font-size: 0.7rem; text-transform: uppercase; font-weight: 700; color: var(--text-muted); margin-top: 5px; }
+
+        /* Caixa de Fórmula */
+        .formula-container {
+            background: var(--bg-app); border-radius: 8px; padding: 12px;
+            border: 1px solid var(--border); text-align: left;
+        }
+        .formula-title { font-size: 0.65rem; text-transform: uppercase; font-weight: 700; color: var(--text-muted); margin-bottom: 4px; display: block; }
+        .formula-math { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--text-muted); word-wrap: break-word; }
+        .formula-math strong { color: var(--text-main); }
+
+        /* Botões */
+        .action-bar { margin-top: 30px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .btn {
+            padding: 15px; border: none; border-radius: 12px; font-weight: 600; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            font-size: 0.9rem; transition: transform 0.1s;
+        }
+        .btn:active { transform: scale(0.98); }
+        .btn-copy { background: var(--bg-app); color: var(--text-main); border: 1px solid var(--border); }
+        .btn-copy:hover { border-color: var(--primary); color: var(--primary); }
+        .btn-whatsapp { background: #25D366; color: white; box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3); }
+
+        /* Dark Mode Switch */
+        .theme-switch-wrapper { display: flex; align-items: center; gap: 10px; margin-top: auto; padding-top: 20px; border-top: 1px solid var(--border); }
+        .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #cbd5e1; transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--primary); }
+        input:checked + .slider:before { transform: translateX(20px); }
+
+        /* Responsividade */
+        @media (max-width: 950px) {
+            .app-grid { grid-template-columns: 1fr; height: auto; overflow: visible; }
+            .sidebar { flex-direction: row; align-items: center; padding: 15px 20px; position: sticky; top: 0; border-bottom: 1px solid var(--border); border-right: none; }
+            .theme-switch-wrapper { margin: 0; padding: 0; border: 0; }
+            .theme-label, .disclaimer, .credit-box { display: none; } /* Oculta em mobile para ganhar espaço */
+            .main-content { grid-template-columns: 1fr; padding: 20px; overflow: visible; }
+            .results-grid { grid-template-columns: 1fr; }
+        }
+    </style>
 </head>
 <body>
 
-    <div class="disclaimer-bar">
-        ⚠️ <strong>Versão Não Oficial (5.0)</strong>: Ferramenta de apoio. Valide sempre com sua chefia imediata.
-    </div>
-
-    <div class="container">
-        <div class="header">
-            <div class="logo-container">
-                <svg height="50" viewBox="0 0 130 45" xmlns="http://www.w3.org/2000/svg">
-                    <style> .ibge-text { font-family: 'Roboto', sans-serif; font-weight: 900; font-style: italic; fill: #0f4098; font-size: 38px; } </style>
-                    <text x="0" y="35" class="ibge-text">IBGE</text>
-                </svg>
-            </div>
-            <h1>Calculadora PGD 2026  Horas Presenciais </h1>
-            <p class="subtitle">Cálculo por dias úteis e corridos.</p>
-        </div>
-
-        <div class="no-print">
-            <div class="card-section">
-                <div class="row">
-                    <div class="col">
-                        <label>Mês de Referência (2026)</label>
-                        <select id="mes">
-                            <option value="0">Janeiro</option>
-                            <option value="1">Fevereiro</option>
-                            <option value="2">Março</option>
-                            <option value="3">Abril</option>
-                            <option value="4">Maio</option>
-                            <option value="5">Junho</option>
-                            <option value="6">Julho</option>
-                            <option value="7">Agosto</option>
-                            <option value="8">Setembro</option>
-                            <option value="9">Outubro</option>
-                            <option value="10">Novembro</option>
-                            <option value="11">Dezembro</option> 
-                        </select>
-                    </div>
-                    <div class="col">
-                        <label>Meta Padrão</label>
-                        <select id="metaPadrao">
-                            <option value="64">64 Horas (Geral)</option>
-                            <option value="32">32 Horas (Reduzida)</option>
-                        </select>
+    <div class="app-grid">
+        <aside class="sidebar">
+            <div>
+                <div class="logo-area">
+                    <div class="logo-symbol">IBGE</div>
+                    <div class="logo-text">
+                        <h1>PGD 2026</h1>
+                        <p>Dashboard Pro</p>
                     </div>
                 </div>
-                
-                <div id="avisoFeriados" class="info-tag"></div>
-            </div>
 
-            <div class="card-section">
-                <div class="separator">🏖️ Afastamentos</div>
-                <p style="font-size: 0.8rem; color: #666; margin-bottom: 10px;">
-                    Se não for tirar férias, licença ou recesso, deixe zerado.
-                </p>
-                
-                <div class="row">
-                    <div class="col">
-                        <label>Total de Férias, Licença ou Recesso (Dias Corridos)</label>
-                        <input type="number" id="feriasCorridos" value="0" min="0" placeholder="Ex: 15">
-                        <small>Total de dias fora (incluindo sáb/dom).</small>
-                    </div>
-                    <div class="col">
-                        <label>Desses, quantos cairiam em Dias Úteis?</label>
-                        <input type="number" id="feriasUteis" value="0" min="0" placeholder="Ex: 11">
-                        <small>Segunda a sexta (excluindo feriados).</small>
-                    </div>
+                <div class="disclaimer">
+                    <small style="color: #d97706; display: flex; align-items: center; gap: 5px;">
+                        <i class="ph ph-warning-circle"></i> Versão Não Oficial
+                    </small>
+                    <p style="font-size: 0.7rem; color: var(--text-muted); margin-top: 5px; line-height: 1.4;">
+                        Valide sempre os dados com o SECAF e chefia imediata.
+                    </p>
                 </div>
             </div>
 
-            <div class="card-section open-section">
-                <div class="section-title">⚙️ Ajuste Fino do Calendário</div>
-                <p style="font-size: 0.8rem; color: #666; margin-bottom: 10px;">
-                    Valores pré-preenchidos automaticamente. <strong>Você pode editá-los</strong> se, no seu SECAF, estiverem diferente.
-                </p>
-
-                <div class="row">
-                    <div class="col">
-                        <label>Dias Úteis no Mês</label>
-                        <input type="number" id="totalDiasUteis" style="background-color: #fff; border-color: #8bb9fe;">
-                    </div>
-                    <div class="col">
-                        <label>Qtd. Feriados ou Pontos Facultativos  (Seg-Sex)</label>
-                        <input type="number" id="totalFeriados">
-                    </div>
+            <div style="margin-top: auto;">
+                <div class="theme-switch-wrapper">
+                    <span class="theme-label" style="font-size: 0.85rem; font-weight: 600;">Modo Escuro</span>
+                    <label class="switch">
+                        <input type="checkbox" id="checkbox">
+                        <span class="slider"></span>
+                    </label>
                 </div>
-                <small style="color: #d63384; margin-top:5px; font-size: 0.7rem;">* O cálculo usa exatamente os números acima.</small>
-            </div>
 
-            <button class="btn-primary" onclick="calcular()">CALCULAR METAS</button>
-        </div>
-        <div id="resultado" class="result-container">
+                <div class="credit-box">
+                    Desenvolvido por <strong>Adriel</strong>
+                </div>
+            </div>
+        </aside>
+
+        <main class="main-content">
             
-            <div class="result-card tecnico">
-                <div class="badge">Recomendado (Técnico)</div>
-                <h3>Cálculo por Dias Úteis</h3>
-                <div class="big-number" id="resTecnico">0h 00m</div>
-                <div class="details" id="detalheTecnico">Disponibilidade real</div>
-                <div class="formula-box" id="formulaTecnicaDisplay"></div>
-            </div>
+            <section class="panel">
+                <div class="panel-title"><i class="ph ph-sliders-horizontal"></i> Configuração</div>
+                
+                <div class="input-group">
+                    <label>Mês de Referência</label>
+                    <select id="mes"></select>
+                </div>
 
-            <div class="result-card pratico">
-                <div class="badge-gray">FAQ / Dias Corridos</div>
-                <h3>Cálculo por Dias Corridos</h3>
-                <div class="big-number" id="resPratico">0h 00m</div>
-                <div class="details" id="detalhePratico">Proporção do mês cheio</div>
-                <div class="formula-box" id="formulaPraticaDisplay"></div>
-            </div>
+                <div class="input-group">
+                    <label>Meta Padrão</label>
+                    <select id="metaPadrao">
+                        <option value="64">64h (Geral)</option>
+                        <option value="32">32h (Reduzida)</option>
+                    </select>
+                </div>
 
-            <div class="action-buttons no-print">
-                <button id="btnCopiar" class="btn-secondary" onclick="copiarResumo()">Copiar Resumo</button>
-                <button class="btn-whatsapp" onclick="compartilharWhatsapp()">Enviar WhatsApp</button>
-                <button class="btn-print" onclick="imprimirPagina()">Imprimir / PDF</button>
-            </div>
+                <div class="divider"></div>
 
-        </div>
+                <div class="panel-title"><i class="ph ph-airplane-tilt"></i> Afastamentos</div>
+                <div class="grid-2">
+                    <div class="input-group">
+                        <label>Dias Corridos</label>
+                        <input type="number" id="feriasCorridos" value="0" min="0" placeholder="0">
+                        <span class="field-desc">Total de dias fora</span>
+                    </div>
+                    <div class="input-group">
+                        <label>Dias Úteis</label>
+                        <input type="number" id="feriasUteis" value="0" min="0" placeholder="0">
+                        <span class="field-desc">Impacto seg-sex</span>
+                    </div>
+                </div>
 
-        <footer class="credits">
-            Desenvolvido por <strong>Adriel</strong> | Baseado na Portaria 1264 e IN 24<br>
-        </footer>
+                <div class="adv-panel">
+                    <div class="adv-header"><i class="ph ph-calendar-check"></i> CALENDÁRIO BASE (Editável)</div>
+                    <div class="grid-2">
+                        <div>
+                            <label style="font-size: 0.75rem;">Dias Úteis</label>
+                            <input type="number" id="totalDiasUteis" style="padding: 8px;">
+                        </div>
+                        <div>
+                            <label style="font-size: 0.75rem;">Feriados</label>
+                            <input type="number" id="totalFeriados" style="padding: 8px;">
+                        </div>
+                    </div>
+                </div>
+            </section>
 
+            <section class="panel results-section">
+                <div class="month-display">
+                    <div>
+                        <h2 id="displayMesNome">Janeiro</h2>
+                        <span id="displayMesDetalhe" style="color: var(--text-muted); font-size: 0.9rem;">...</span>
+                    </div>
+                    <i class="ph ph-calendar" style="font-size: 2rem; color: var(--primary); opacity: 0.2;"></i>
+                </div>
+
+                <div class="results-grid">
+                    
+                    <div class="res-card tec">
+                        <div class="chart-wrapper">
+                            <svg class="progress-ring" width="160" height="160">
+                                <circle class="progress-ring__circle-bg" stroke="currentColor" stroke-width="8" fill="transparent" r="70" cx="80" cy="80"/>
+                                <circle id="ringTecnico" class="progress-ring__circle" stroke="currentColor" stroke-width="8" fill="transparent" r="70" cx="80" cy="80"/>
+                            </svg>
+                            <div class="chart-content">
+                                <span class="chart-hours" id="resTecnico">0h</span>
+                                <span class="chart-label">Dias Úteis</span>
+                            </div>
+                        </div>
+
+                        <div class="formula-container">
+                            <span class="formula-title">Cálculo Recomendado</span>
+                            <div class="formula-math" id="formulaTecnicoMath">Loading...</div>
+                            <div style="margin-top:5px; font-size: 0.7rem; color: var(--text-muted);" id="detalheTecnico">...</div>
+                        </div>
+                    </div>
+
+                    <div class="res-card pra">
+                        <div class="chart-wrapper">
+                            <svg class="progress-ring" width="160" height="160">
+                                <circle class="progress-ring__circle-bg" stroke="currentColor" stroke-width="8" fill="transparent" r="70" cx="80" cy="80"/>
+                                <circle id="ringPratico" class="progress-ring__circle" stroke="currentColor" stroke-width="8" fill="transparent" r="70" cx="80" cy="80"/>
+                            </svg>
+                            <div class="chart-content">
+                                <span class="chart-hours" id="resPratico">0h</span>
+                                <span class="chart-label">Dias Corridos</span>
+                            </div>
+                        </div>
+
+                        <div class="formula-container">
+                            <span class="formula-title">Cálculo Alternativo</span>
+                            <div class="formula-math" id="formulaPraticoMath">Loading...</div>
+                            <div style="margin-top:5px; font-size: 0.7rem; color: var(--text-muted);" id="detalhePratico">...</div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="action-bar">
+                    <button class="btn btn-copy" onclick="copiarResumo()">
+                        <i class="ph ph-copy"></i> Copiar Resumo
+                    </button>
+                    <button class="btn btn-whatsapp" onclick="compartilharWhatsapp()">
+                        <i class="ph ph-whatsapp-logo"></i> WhatsApp
+                    </button>
+                </div>
+            </section>
+        </main>
     </div>
 
-    <script src="script.js"></script>
+    <script>
+        // DADOS 2026
+        const calendario2026 = [
+            { uteis: 20, feriados: 2, total: 31, obs: "01 (Conf. Univ), 20 (S. Sebastião)" }, 
+            { uteis: 18, feriados: 2, total: 28, obs: "16 e 17 (Carnaval)" },
+            { uteis: 22, feriados: 0, total: 31, obs: "Mês cheio" },
+            { uteis: 19, feriados: 3, total: 30, obs: "03 (Paixão), 21 (Tiradentes), 23 (S. Jorge)" },
+            { uteis: 20, feriados: 1, total: 31, obs: "01 (Dia do Trabalho)" },
+            { uteis: 21, feriados: 1, total: 30, obs: "04 (Corpus Christi)" },
+            { uteis: 23, feriados: 0, total: 31, obs: "Mês cheio" },
+            { uteis: 21, feriados: 0, total: 31, obs: "Mês cheio" },
+            { uteis: 21, feriados: 1, total: 30, obs: "07 (Independência)" },
+            { uteis: 21, feriados: 1, total: 31, obs: "12 (N. Sra. Aparecida)" },
+            { uteis: 19, feriados: 3, total: 30, obs: "02, 15 e 20 (Nov)" },
+            { uteis: 22, feriados: 1, total: 31, obs: "25 (Natal)" }
+        ];
+
+        const nomesMeses = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            popularSelectMeses();
+            const inputs = ['mes', 'metaPadrao', 'feriasCorridos', 'feriasUteis', 'totalDiasUteis', 'totalFeriados'];
+            
+            inputs.forEach(id => {
+                document.getElementById(id).addEventListener('input', () => {
+                    if(id === 'mes') carregarDadosMes();
+                    calcular();
+                });
+            });
+
+            // Dark Mode Init & Listener
+            const themeToggle = document.getElementById('checkbox');
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                themeToggle.checked = true;
+                document.documentElement.setAttribute('data-theme', 'dark');
+            }
+            themeToggle.addEventListener('change', (e) => {
+                document.documentElement.setAttribute('data-theme', e.target.checked ? 'dark' : 'light');
+            });
+
+            carregarDadosMes();
+        });
+
+        function popularSelectMeses() {
+            const select = document.getElementById('mes');
+            nomesMeses.forEach((mes, index) => {
+                const option = document.createElement('option');
+                option.value = index;
+                option.text = mes;
+                select.appendChild(option);
+            });
+        }
+
+        function carregarDadosMes() {
+            const mesIndex = parseInt(document.getElementById('mes').value);
+            const dados = calendario2026[mesIndex];
+            document.getElementById('totalDiasUteis').value = dados.uteis;
+            document.getElementById('totalFeriados').value = dados.feriados;
+            document.getElementById('displayMesNome').innerText = nomesMeses[mesIndex];
+            document.getElementById('displayMesDetalhe').innerText = dados.obs;
+            calcular();
+        }
+
+        function calcular() {
+            const mesIndex = parseInt(document.getElementById('mes').value);
+            const dadosBase = calendario2026[mesIndex];
+            const metaPadrao = parseInt(document.getElementById('metaPadrao').value);
+            
+            let feriasCorridos = Math.max(0, parseInt(document.getElementById('feriasCorridos').value) || 0);
+            let feriasUteis = Math.max(0, parseInt(document.getElementById('feriasUteis').value) || 0);
+            
+            const totalDiasUteis = parseInt(document.getElementById('totalDiasUteis').value);
+            const totalFeriados = parseInt(document.getElementById('totalFeriados').value);
+
+            // CÁLCULO TÉCNICO
+            const diasTrabalhaveis = Math.max(0, totalDiasUteis - feriasUteis);
+            let propTecnica = totalDiasUteis > 0 ? diasTrabalhaveis / totalDiasUteis : 0;
+            let credito = totalFeriados * 8;
+            let metaTecnica = (propTecnica * metaPadrao) - credito;
+            if (metaTecnica < 0) metaTecnica = 0;
+
+            atualizarCard('Tecnico', metaTecnica, metaPadrao, diasTrabalhaveis, totalDiasUteis, 
+                `(${diasTrabalhaveis}/${totalDiasUteis}) × ${metaPadrao} - ${credito} = <strong>${metaTecnica.toFixed(2)}h</strong>`);
+
+            // CÁLCULO PRÁTICO
+            const diasAtivos = Math.max(0, dadosBase.total - feriasCorridos);
+            let propPratica = diasAtivos / dadosBase.total;
+            let metaPratica = (propPratica * metaPadrao) - credito;
+            if (metaPratica < 0) metaPratica = 0;
+
+            atualizarCard('Pratico', metaPratica, metaPadrao, diasAtivos, dadosBase.total,
+                `(${diasAtivos}/${dadosBase.total}) × ${metaPadrao} - ${credito} = <strong>${metaPratica.toFixed(2)}h</strong>`);
+        }
+
+        function atualizarCard(tipo, valor, metaMax, diasAtivos, diasTotal, formulaHTML) {
+            // Atualiza Texto
+            document.getElementById(`res${tipo}`).innerText = formatarHoras(valor);
+            
+            // ID CORRIGIDO AQUI
+            document.getElementById(`formula${tipo}Math`).innerHTML = formulaHTML;
+            document.getElementById(`detalhe${tipo}`).innerText = `Base: ${diasAtivos} de ${diasTotal} dias`;
+
+            // Atualiza Gráfico Circular
+            const circle = document.getElementById(`ring${tipo}`);
+            const radius = circle.r.baseVal.value;
+            const circumference = radius * 2 * Math.PI;
+            
+            circle.style.strokeDasharray = `${circumference} ${circumference}`;
+            
+            // Lógica do progresso
+            let percent = valor / metaMax;
+            if (percent > 1) percent = 1; 
+            if (percent < 0) percent = 0;
+
+            const offset = circumference - (percent * circumference);
+            circle.style.strokeDashoffset = offset;
+        }
+
+        function formatarHoras(valor) {
+            const h = Math.floor(valor);
+            const m = Math.round((valor - h) * 60);
+            return `${h}h ${m < 10 ? '0'+m : m}m`;
+        }
+
+        function gerarTexto() {
+            return `*PGD ${document.getElementById('displayMesNome').innerText}*\n🎯 Téc: ${document.getElementById('resTecnico').innerText}\n📅 Prát: ${document.getElementById('resPratico').innerText}`;
+        }
+        function copiarResumo() { 
+            navigator.clipboard.writeText(gerarTexto()).then(() => {
+                const btn = document.querySelector('.btn-copy');
+                const original = btn.innerHTML;
+                btn.innerHTML = '<i class="ph ph-check"></i> Copiado!';
+                setTimeout(() => btn.innerHTML = original, 2000);
+            }); 
+        }
+        function compartilharWhatsapp() { window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(gerarTexto())}`, '_blank'); }
+    </script>
 </body>
 </html>
-
