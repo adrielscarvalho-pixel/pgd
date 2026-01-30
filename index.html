@@ -67,10 +67,6 @@
         .logo-text h1 { margin: 0; font-size: 1.1rem; font-weight: 800; letter-spacing: -0.5px; }
         .logo-text p { margin: 0; font-size: 0.75rem; color: var(--text-muted); font-weight: 600; }
 
-        .disclaimer {
-            margin-bottom: 20px;
-        }
-
         .credit-box {
             font-size: 0.75rem; color: var(--text-muted); text-align: center;
             padding-top: 20px; border-top: 1px solid var(--border); margin-top: 10px;
@@ -95,25 +91,31 @@
         }
 
         /* Inputs */
-        .input-group { margin-bottom: 15px; }
-        label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 8px; }
-        .field-desc { font-size: 0.75rem; color: var(--text-muted); margin-top: 4px; display: block; }
+        .input-group { margin-bottom: 20px; }
+        label { display: block; font-size: 0.9rem; font-weight: 600; margin-bottom: 8px; color: var(--text-main); }
+        
+        /* Helper text melhorado para idosos */
+        .field-desc { 
+            font-size: 0.8rem; color: var(--text-muted); margin-top: 6px; 
+            display: block; line-height: 1.4; background: var(--bg-app); 
+            padding: 8px; border-radius: 6px; border-left: 3px solid var(--border);
+        }
         
         input, select {
             width: 100%; padding: 12px; background: var(--bg-app); border: 1px solid var(--border);
-            border-radius: 8px; color: var(--text-main); font-family: inherit; font-size: 0.9rem;
+            border-radius: 8px; color: var(--text-main); font-family: inherit; font-size: 0.95rem;
         }
         input:focus, select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
 
         .divider { height: 1px; background: var(--border); margin: 25px 0; }
 
-        /* Painel Avançado (Always Visible) */
+        /* Painel Avançado */
         .adv-panel {
             background: rgba(59, 130, 246, 0.03); border: 1px dashed var(--border);
             border-radius: 12px; padding: 15px;
         }
         .adv-header { color: var(--primary); font-size: 0.75rem; font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; gap: 5px; }
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
 
         /* --- RESULTADOS --- */
         .month-display {
@@ -126,26 +128,33 @@
 
         .res-card {
             background: var(--bg-card); border: 1px solid var(--border);
-            border-radius: 20px; padding: 30px 20px; text-align: center;
-            position: relative; overflow: hidden;
-            display: flex; flex-direction: column; justify-content: space-between;
+            border-radius: 20px; padding: 0; /* Padding removido para layout interno */
+            text-align: center; position: relative; overflow: hidden;
+            display: flex; flex-direction: column;
         }
-        /* Efeito de brilho no topo do card */
-        .res-card::before {
-            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px;
+        
+        /* Cabeçalho do Card (NOVO) */
+        .card-heading {
+            padding: 20px;
+            border-bottom: 1px solid var(--border);
+            background: linear-gradient(to bottom, var(--bg-app), var(--bg-card));
         }
+        .card-heading h3 { margin: 0; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); }
+        .card-heading strong { display: block; font-size: 1.1rem; color: var(--text-main); margin-top: 5px; font-weight: 800; }
+
+        .card-body { padding: 30px 20px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; align-items: center;}
+
+        /* Efeito de brilho no topo */
+        .res-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; z-index: 5; }
         .res-card.tec::before { background: var(--primary); box-shadow: 0 0 10px var(--primary); }
         .res-card.pra::before { background: var(--success); box-shadow: 0 0 10px var(--success); }
 
         /* O GRÁFICO (SVG) */
-        .chart-wrapper {
-            position: relative; width: 160px; height: 160px; margin: 0 auto 20px auto;
-        }
+        .chart-wrapper { position: relative; width: 150px; height: 150px; margin: 0 auto 20px auto; }
         .progress-ring__circle-bg { stroke: var(--border); }
         .progress-ring__circle {
             transition: stroke-dashoffset 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-            transform: rotate(-90deg); transform-origin: 50% 50%;
-            stroke-linecap: round;
+            transform: rotate(-90deg); transform-origin: 50% 50%; stroke-linecap: round;
         }
         /* Glow Effect no SVG */
         .tec .progress-ring__circle { stroke: var(--primary); filter: drop-shadow(0 0 4px var(--primary-glow)); }
@@ -157,11 +166,11 @@
             display: flex; flex-direction: column; align-items: center;
         }
         .chart-hours { font-size: 1.8rem; font-weight: 800; line-height: 1; letter-spacing: -1px; }
-        .chart-label { font-size: 0.7rem; text-transform: uppercase; font-weight: 700; color: var(--text-muted); margin-top: 5px; }
+        .chart-label { font-size: 0.65rem; text-transform: uppercase; font-weight: 700; color: var(--text-muted); margin-top: 5px; }
 
         /* Caixa de Fórmula */
         .formula-container {
-            background: var(--bg-app); border-radius: 8px; padding: 12px;
+            background: var(--bg-app); border-radius: 8px; padding: 12px; width: 100%;
             border: 1px solid var(--border); text-align: left;
         }
         .formula-title { font-size: 0.65rem; text-transform: uppercase; font-weight: 700; color: var(--text-muted); margin-bottom: 4px; display: block; }
@@ -194,7 +203,7 @@
             .app-grid { grid-template-columns: 1fr; height: auto; overflow: visible; }
             .sidebar { flex-direction: row; align-items: center; padding: 15px 20px; position: sticky; top: 0; border-bottom: 1px solid var(--border); border-right: none; }
             .theme-switch-wrapper { margin: 0; padding: 0; border: 0; }
-            .theme-label, .disclaimer, .credit-box { display: none; } /* Oculta em mobile para ganhar espaço */
+            .theme-label, .disclaimer, .credit-box { display: none; }
             .main-content { grid-template-columns: 1fr; padding: 20px; overflow: visible; }
             .results-grid { grid-template-columns: 1fr; }
         }
@@ -231,7 +240,6 @@
                         <span class="slider"></span>
                     </label>
                 </div>
-
                 <div class="credit-box">
                     Desenvolvido por <strong>Adriel</strong>
                 </div>
@@ -258,18 +266,22 @@
 
                 <div class="divider"></div>
 
-                <div class="panel-title"><i class="ph ph-airplane-tilt"></i> Afastamentos</div>
-                <div class="grid-2">
-                    <div class="input-group">
-                        <label>Dias Corridos</label>
-                        <input type="number" id="feriasCorridos" value="0" min="0" placeholder="0">
-                        <span class="field-desc">Total de dias fora</span>
-                    </div>
-                    <div class="input-group">
-                        <label>Dias Úteis</label>
-                        <input type="number" id="feriasUteis" value="0" min="0" placeholder="0">
-                        <span class="field-desc">Impacto seg-sex</span>
-                    </div>
+                <div class="panel-title"><i class="ph ph-airplane-tilt"></i> Registro de Afastamentos</div>
+                
+                <div class="input-group">
+                    <label>1. Férias, Licenças e Recessos (Total)</label>
+                    <input type="number" id="feriasCorridos" value="0" min="0" placeholder="0">
+                    <span class="field-desc">
+                        Some todos os dias de ausência no mês (férias, licenças médicas, abonos, recesso de final de ano, casamento, etc).
+                    </span>
+                </div>
+                
+                <div class="input-group">
+                    <label>2. Desses dias, quantos caem em Dias Úteis?</label>
+                    <input type="number" id="feriasUteis" value="0" min="0" placeholder="0">
+                    <span class="field-desc">
+                        Conte apenas os dias de Segunda a Sexta-feira que não sejam feriados.
+                    </span>
                 </div>
 
                 <div class="adv-panel">
@@ -299,40 +311,52 @@
                 <div class="results-grid">
                     
                     <div class="res-card tec">
-                        <div class="chart-wrapper">
-                            <svg class="progress-ring" width="160" height="160">
-                                <circle class="progress-ring__circle-bg" stroke="currentColor" stroke-width="8" fill="transparent" r="70" cx="80" cy="80"/>
-                                <circle id="ringTecnico" class="progress-ring__circle" stroke="currentColor" stroke-width="8" fill="transparent" r="70" cx="80" cy="80"/>
-                            </svg>
-                            <div class="chart-content">
-                                <span class="chart-hours" id="resTecnico">0h</span>
-                                <span class="chart-label">Dias Úteis</span>
-                            </div>
+                        <div class="card-heading">
+                            <h3>Meta Presencial</h3>
+                            <strong>Cálculo por Dias Úteis</strong>
                         </div>
+                        
+                        <div class="card-body">
+                            <div class="chart-wrapper">
+                                <svg class="progress-ring" width="150" height="150">
+                                    <circle class="progress-ring__circle-bg" stroke="currentColor" stroke-width="8" fill="transparent" r="65" cx="75" cy="75"/>
+                                    <circle id="ringTecnico" class="progress-ring__circle" stroke="currentColor" stroke-width="8" fill="transparent" r="65" cx="75" cy="75"/>
+                                </svg>
+                                <div class="chart-content">
+                                    <span class="chart-hours" id="resTecnico">0h</span>
+                                </div>
+                            </div>
 
-                        <div class="formula-container">
-                            <span class="formula-title">Cálculo Recomendado</span>
-                            <div class="formula-math" id="formulaTecnicoMath">Loading...</div>
-                            <div style="margin-top:5px; font-size: 0.7rem; color: var(--text-muted);" id="detalheTecnico">...</div>
+                            <div class="formula-container">
+                                <span class="formula-title">Memória de Cálculo</span>
+                                <div class="formula-math" id="formulaTecnicoMath">Loading...</div>
+                                <div style="margin-top:5px; font-size: 0.7rem; color: var(--text-muted);" id="detalheTecnico">...</div>
+                            </div>
                         </div>
                     </div>
 
                     <div class="res-card pra">
-                        <div class="chart-wrapper">
-                            <svg class="progress-ring" width="160" height="160">
-                                <circle class="progress-ring__circle-bg" stroke="currentColor" stroke-width="8" fill="transparent" r="70" cx="80" cy="80"/>
-                                <circle id="ringPratico" class="progress-ring__circle" stroke="currentColor" stroke-width="8" fill="transparent" r="70" cx="80" cy="80"/>
-                            </svg>
-                            <div class="chart-content">
-                                <span class="chart-hours" id="resPratico">0h</span>
-                                <span class="chart-label">Dias Corridos</span>
-                            </div>
+                        <div class="card-heading">
+                            <h3>Meta Presencial</h3>
+                            <strong>Cálculo por Dias Corridos</strong>
                         </div>
 
-                        <div class="formula-container">
-                            <span class="formula-title">Cálculo Alternativo</span>
-                            <div class="formula-math" id="formulaPraticoMath">Loading...</div>
-                            <div style="margin-top:5px; font-size: 0.7rem; color: var(--text-muted);" id="detalhePratico">...</div>
+                        <div class="card-body">
+                            <div class="chart-wrapper">
+                                <svg class="progress-ring" width="150" height="150">
+                                    <circle class="progress-ring__circle-bg" stroke="currentColor" stroke-width="8" fill="transparent" r="65" cx="75" cy="75"/>
+                                    <circle id="ringPratico" class="progress-ring__circle" stroke="currentColor" stroke-width="8" fill="transparent" r="65" cx="75" cy="75"/>
+                                </svg>
+                                <div class="chart-content">
+                                    <span class="chart-hours" id="resPratico">0h</span>
+                                </div>
+                            </div>
+
+                            <div class="formula-container">
+                                <span class="formula-title">Memória de Cálculo</span>
+                                <div class="formula-math" id="formulaPraticoMath">Loading...</div>
+                                <div style="margin-top:5px; font-size: 0.7rem; color: var(--text-muted);" id="detalhePratico">...</div>
+                            </div>
                         </div>
                     </div>
 
@@ -448,9 +472,9 @@
             // Atualiza Texto
             document.getElementById(`res${tipo}`).innerText = formatarHoras(valor);
             
-            // ID CORRIGIDO AQUI
+            // Atualiza ID correto
             document.getElementById(`formula${tipo}Math`).innerHTML = formulaHTML;
-            document.getElementById(`detalhe${tipo}`).innerText = `Base: ${diasAtivos} de ${diasTotal} dias`;
+            document.getElementById(`detalhe${tipo}`).innerText = `Base: ${diasAtivos} de ${diasTotal} dias considerados`;
 
             // Atualiza Gráfico Circular
             const circle = document.getElementById(`ring${tipo}`);
