@@ -1,179 +1,108 @@
-// --- CONFIGURAÇÃO E DADOS ---
-
-const diasSemana = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
-
-// Feriados Fixos
-const feriadosFixos = [
-    { d: 1, m: 0, nome: "Confraternização Universal", tipo: "Feriado Nacional" },
-    { d: 21, m: 3, nome: "Tiradentes", tipo: "Feriado Nacional" },
-    { d: 1, m: 4, nome: "Dia do Trabalho", tipo: "Feriado Nacional" },
-    { d: 7, m: 8, nome: "Independência do Brasil", tipo: "Feriado Nacional" },
-    { d: 12, m: 9, nome: "Nossa Sra. Aparecida", tipo: "Feriado Nacional" },
-    { d: 28, m: 9, nome: "Dia do Servidor Público", tipo: "Ponto Facultativo" },
-    { d: 2, m: 10, nome: "Finados", tipo: "Feriado Nacional" },
-    { d: 15, m: 10, nome: "Proclamação da República", tipo: "Feriado Nacional" },
-    { d: 20, m: 10, nome: "Consciência Negra", tipo: "Feriado Nacional" },
-    // Ajustado para 13h conforme solicitado
-    { d: 24, m: 11, nome: "Véspera de Natal (após 13h)", tipo: "Ponto Facultativo" },
-    { d: 25, m: 11, nome: "Natal", tipo: "Feriado Nacional" },
-    // Ajustado para 13h conforme solicitado
-    { d: 31, m: 11, nome: "Véspera de Ano Novo (após 13h)", tipo: "Ponto Facultativo" }
+// --- DADOS FIXOS 2026 (Base IBGE/RJ + Nacional) ---
+const calendario2026 = [
+    { uteis: 20, feriados: 2, total: 31, obs: "01 (Conf. Univ), 20 (S. Sebastião)" }, // Jan
+    { uteis: 18, feriados: 2, total: 28, obs: "16 e 17 (Carnaval)" }, // Fev
+    { uteis: 22, feriados: 0, total: 31, obs: "Sem feriados em dias úteis" }, // Mar
+    { uteis: 19, feriados: 3, total: 30, obs: "03 (Paixão), 21 (Tiradentes), 23 (S. Jorge)" }, // Abr
+    { uteis: 20, feriados: 1, total: 31, obs: "01 (Dia do Trabalho)" }, // Mai
+    { uteis: 21, feriados: 1, total: 30, obs: "04 (Corpus Christi)" }, // Jun
+    { uteis: 23, feriados: 0, total: 31, obs: "Sem feriados em dias úteis" }, // Jul
+    { uteis: 21, feriados: 0, total: 31, obs: "Sem feriados em dias úteis" }, // Ago
+    { uteis: 21, feriados: 1, total: 30, obs: "07 (Independência)" }, // Set
+    { uteis: 21, feriados: 1, total: 31, obs: "12 (N. Sra. Aparecida)" }, // Out
+    { uteis: 19, feriados: 3, total: 30, obs: "02 (Finados), 15 (Proclamação), 20 (Zumbi)" }, // Nov
+    { uteis: 22, feriados: 1, total: 31, obs: "25 (Natal)" }  // Dez
 ];
 
-// Algoritmo de Páscoa e Feriados Móveis
-function getEasterDate(year) {
-    const a = year % 19;
-    const b = Math.floor(year / 100);
-    const c = year % 100;
-    const d = Math.floor(b / 4);
-    const e = b % 4;
-    const f = Math.floor((b + 8) / 25);
-    const g = Math.floor((b - f + 1) / 3);
-    const h = (19 * a + b - d - g + 15) % 30;
-    const i = Math.floor(c / 4);
-    const k = c % 4;
-    const l = (32 + 2 * e + 2 * i - h - k) % 7;
-    const m = Math.floor((a + 11 * h + 22 * l) / 451);
-    const monthIndex = Math.floor((h + l - 7 * m + 114) / 31) - 1;
-    const day = ((h + l - 7 * m + 114) % 31) + 1;
-    return new Date(year, monthIndex, day);
-}
-
-function getFeriadosMoveis(year) {
-    const pascoa = getEasterDate(year);
-    const addDays = (date, days) => {
-        const result = new Date(date);
-        result.setDate(result.getDate() + days);
-        return result;
-    }
-    
-    // Datas móveis tradicionais
-    const carnavalSeg = addDays(pascoa, -48);
-    const carnavalTer = addDays(pascoa, -47);
-    const cinzas = addDays(pascoa, -46);
-    const sextaSanta = addDays(pascoa, -2);
-    const corpusChristi = addDays(pascoa, 60);
-
-    return [
-        { d: carnavalSeg.getDate(), m: carnavalSeg.getMonth(), nome: "Carnaval (Segunda)", tipo: "Ponto Facultativo" },
-        { d: carnavalTer.getDate(), m: carnavalTer.getMonth(), nome: "Carnaval (Terça)", tipo: "Ponto Facultativo" },
-        { d: cinzas.getDate(), m: cinzas.getMonth(), nome: "Quarta de Cinzas (até 14h)", tipo: "Ponto Facultativo" },
-        { d: sextaSanta.getDate(), m: sextaSanta.getMonth(), nome: "Paixão de Cristo", tipo: "Feriado Nacional" },
-        { d: corpusChristi.getDate(), m: corpusChristi.getMonth(), nome: "Corpus Christi", tipo: "Ponto Facultativo" }
-    ];
-}
+const nomesMeses = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
 
 function init() {
-    const elMes = document.getElementById('mes');
-    const elAno = document.getElementById('ano');
-    elMes.addEventListener('change', atualizarInterface);
-    elAno.addEventListener('change', atualizarInterface);
-    
-    // Força atualização inicial para carregar Dezembro/2025 corretamente
-    atualizarInterface();
+    document.getElementById('mes').addEventListener('change', carregarDadosMes);
+    carregarDadosMes(); 
 }
 
-function atualizarInterface() {
-    const mes = parseInt(document.getElementById('mes').value);
-    const ano = parseInt(document.getElementById('ano').value);
+function carregarDadosMes() {
+    const mesIndex = parseInt(document.getElementById('mes').value);
+    const dados = calendario2026[mesIndex];
 
-    // 1. Atualizar Total de Dias
-    const totalDias = new Date(ano, mes + 1, 0).getDate();
-    const selectDias = document.getElementById('totalDiasMes');
-    selectDias.innerHTML = '';
-    [28, 29, 30, 31].forEach(d => {
-        let opt = document.createElement('option');
-        opt.value = d;
-        opt.innerText = d + " Dias";
-        if (d === totalDias) opt.selected = true;
-        selectDias.appendChild(opt);
-    });
-
-    // 2. Atualizar Lista de Feriados
-    const moveis = getFeriadosMoveis(ano);
-    const todosFeriados = [...feriadosFixos, ...moveis];
-    const feriadosDoMes = todosFeriados.filter(f => f.m === mes);
-    feriadosDoMes.sort((a, b) => a.d - b.d);
-
-    const listaEl = document.getElementById('listaFeriados');
-    listaEl.innerHTML = '';
-
-    if (feriadosDoMes.length === 0) {
-        listaEl.innerHTML = '<li><i>Nenhuma previsão nacional neste mês.</i></li>';
+    document.getElementById('totalDiasUteis').value = dados.uteis;
+    document.getElementById('totalFeriados').value = dados.feriados;
+    
+    const divAviso = document.getElementById('avisoFeriados');
+    if (dados.feriados > 0) {
+        divAviso.innerHTML = `📅 <strong>Previsão:</strong> Este mês tem ${dados.uteis} dias úteis e ${dados.feriados} feriado(s): <br><em>${dados.obs}</em>`;
+        divAviso.style.display = 'block';
     } else {
-        feriadosDoMes.forEach(f => {
-            const dataObj = new Date(ano, f.m, f.d);
-            const diaSemana = diasSemana[dataObj.getDay()];
-            let li = document.createElement('li');
-            li.innerHTML = `<b>${pad(f.d)}/${pad(f.m + 1)}</b> - ${f.nome} <br> <small>(${diaSemana}) - ${f.tipo}</small>`;
-            listaEl.appendChild(li);
-        });
+        divAviso.innerHTML = `📅 Mês "cheio": ${dados.uteis} dias úteis previstos.`;
     }
+}
+
+function formatarHoras(valor) {
+    if (valor < 0) valor = 0;
+    const h = Math.floor(valor);
+    const m = Math.round((valor - h) * 60);
+    return `${h}h ${m < 10 ? '0'+m : m}m`;
 }
 
 function calcular() {
+    const mesIndex = parseInt(document.getElementById('mes').value);
+    const dadosBase = calendario2026[mesIndex];
     const metaPadrao = parseInt(document.getElementById('metaPadrao').value);
+
+    const feriasCorridos = parseInt(document.getElementById('feriasCorridos').value) || 0;
+    const feriasUteis = parseInt(document.getElementById('feriasUteis').value) || 0;
     
-    // FIXADO: Jornada padrão de 8h para cálculo de abatimentos
-    const jornada = 8; 
+    const totalDiasUteis = parseInt(document.getElementById('totalDiasUteis').value);
+    const totalFeriados = parseInt(document.getElementById('totalFeriados').value);
 
-    const totalDias = parseInt(document.getElementById('totalDiasMes').value);
-    const diasFerias = parseInt(document.getElementById('diasFerias').value) || 0;
-    const feriadosUteis = parseInt(document.getElementById('feriadosUteis').value) || 0;
-
-    if (diasFerias > totalDias) {
-        alert("Atenção: Dias de férias não podem ser maiores que dias do mês.");
-        return;
-    }
-
-    // Lógica Proporcional
-    const metaBase = (metaPadrao * jornada) / 8; // Mantém a proporção base
-    const diasAtivos = totalDias - diasFerias;
-    const metaPosFerias = metaBase * (diasAtivos / totalDias);
+    // CÁLCULO 1: TÉCNICO
+    const diasTrabalhaveis = totalDiasUteis - feriasUteis;
+    let propTecnica = 0;
+    if (totalDiasUteis > 0) propTecnica = diasTrabalhaveis / totalDiasUteis;
     
-    // Abatimento dos Feriados (Qtd * 8h)
-    const horasAbatidasFeriados = feriadosUteis * jornada;
+    let metaTecnicaBruta = propTecnica * metaPadrao;
+    let creditoFeriados = totalFeriados * 8;
+    let metaTecnicaLiquida = metaTecnicaBruta - creditoFeriados;
 
-    let resultado = metaPosFerias - horasAbatidasFeriados;
-    if (resultado < 0) resultado = 0;
+    // CÁLCULO 2: PRÁTICO
+    const diasAtivos = dadosBase.total - feriasCorridos;
+    let propPratica = diasAtivos / dadosBase.total;
+    let metaPraticaBruta = propPratica * metaPadrao;
+    let metaPraticaLiquida = metaPraticaBruta - creditoFeriados;
 
-    const horas = Math.floor(resultado);
-    const minutos = Math.round((resultado - horas) * 60);
-    const textoResultado = `${horas}h ${minutos > 0 ? minutos + 'm' : ''}`;
+    // EXIBIÇÃO
+    document.getElementById('resTecnico').innerText = formatarHoras(metaTecnicaLiquida);
+    document.getElementById('detalheTecnico').innerText = `Base: ${diasTrabalhaveis} de ${totalDiasUteis} dias úteis trabalhados.`;
+    document.getElementById('formulaTecnicaDisplay').innerHTML = `<code>((${totalDiasUteis} - ${feriasUteis}) ÷ ${totalDiasUteis}) × ${metaPadrao} - ${creditoFeriados} = <strong>${metaTecnicaLiquida.toFixed(2)}h</strong></code>`;
 
-    document.getElementById('metaFinal').innerText = textoResultado;
+    document.getElementById('resPratico').innerText = formatarHoras(metaPraticaLiquida);
+    document.getElementById('detalhePratico').innerText = `Base: ${diasAtivos} de ${dadosBase.total} dias corridos ativos.`;
+    document.getElementById('formulaPraticaDisplay').innerHTML = `<code>((${dadosBase.total} - ${feriasCorridos}) ÷ ${dadosBase.total}) × ${metaPadrao} - ${creditoFeriados} = <strong>${metaPraticaLiquida.toFixed(2)}h</strong></code>`;
+
     document.getElementById('resultado').style.display = 'block';
-    document.getElementById('resultado').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    document.getElementById('resultado').scrollIntoView({ behavior: 'smooth' });
 }
 
-function gerarTextoResumo() {
-    const metaFinal = document.getElementById('metaFinal').innerText;
-    const mesIdx = parseInt(document.getElementById('mes').value);
-    const ano = document.getElementById('ano').value;
-    const nomesMeses = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
-    
-    const metaPadrao = parseInt(document.getElementById('metaPadrao').value);
-    const jornada = 8;
-    const metaBase = (metaPadrao * jornada) / 8;
-    const diasFerias = parseInt(document.getElementById('diasFerias').value) || 0;
-    const feriadosUteis = parseInt(document.getElementById('feriadosUteis').value) || 0;
-    
-    const totalDias = parseInt(document.getElementById('totalDiasMes').value);
-    const metaPosFerias = metaBase * ((totalDias - diasFerias) / totalDias);
-    const horasAbatidasFerias = (metaBase - metaPosFerias).toFixed(1);
-    const horasAbatidasFeriados = feriadosUteis * jornada;
+// --- FUNÇÕES DE COMPARTILHAMENTO ---
 
-    return `*Cálculo PGD - ${nomesMeses[mesIdx]}/${ano}*
-📅 Dias Totais: ${totalDias}
-⏱️ Meta Original: ${metaBase}h
-🏖️ Férias: -${horasAbatidasFerias}h
-📆 Feriados Úteis: -${horasAbatidasFeriados}h
+function gerarTextoResumo() {
+    const mesTexto = nomesMeses[parseInt(document.getElementById('mes').value)];
+    const resTecnico = document.getElementById('resTecnico').innerText;
+    const resPratico = document.getElementById('resPratico').innerText;
+    const feriasCorridos = document.getElementById('feriasCorridos').value;
+    
+    return `*Cálculo de Metas PGD 2026*
+🗓️ Mês: ${mesTexto}
+🏖️ Afastamentos: ${feriasCorridos} dias
 -------------------------
-*🎯 META PRESENCIAL: ${metaFinal}*`;
+*🎯 Meta (Dias Úteis): ${resTecnico}*
+📅 Meta (Calendário): ${resPratico}
+-------------------------
+_Gerado pela Calculadora V5.0_`;
 }
 
 function copiarResumo() {
-    const texto = gerarTextoResumo().replace(/\*/g, '');
+    const texto = gerarTextoResumo().replace(/\*/g, '').replace(/_/g, ''); // Remove formatação MD para area de transf. simples
     navigator.clipboard.writeText(texto).then(() => {
         const btn = document.getElementById('btnCopiar');
         const original = btn.innerText;
@@ -191,7 +120,5 @@ function compartilharWhatsapp() {
 function imprimirPagina() {
     window.print();
 }
-
-function pad(n) { return n < 10 ? '0' + n : n; }
 
 window.onload = init;
