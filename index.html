@@ -11,6 +11,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 
     <style>
         :root {
@@ -246,6 +247,51 @@
         .btn-zap { background: var(--bg-card); border-color: var(--border-strong); color: var(--text-main); }
         .btn-zap:hover { border-color: #1faf54; color: #1faf54; }
 
+        /* ---------- VERIFICAÇÃO (upload SECAF) ---------- */
+        .verify-card {
+            margin-top: 22px; background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: var(--radius); box-shadow: var(--shadow); padding: 22px;
+        }
+        .verify-head { display: flex; gap: 13px; align-items: flex-start; margin-bottom: 18px; }
+        .verify-head > i { color: var(--secaf-blue); font-size: 1.7rem; flex-shrink: 0; }
+        .verify-head h3 { margin: 0 0 3px; font-size: 1.05rem; font-weight: 700; }
+        .verify-head p { margin: 0; font-size: 0.82rem; color: var(--text-muted); line-height: 1.5; }
+
+        .dropzone {
+            display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+            padding: 26px; border: 2px dashed var(--border-strong); border-radius: var(--radius);
+            background: var(--bg-subtle); cursor: pointer; text-align: center;
+            transition: border-color 0.15s ease, background 0.15s ease;
+        }
+        .dropzone:hover, .dropzone.drag { border-color: var(--secaf-blue); background: var(--secaf-blue-soft); }
+        .dropzone > i { font-size: 1.9rem; color: var(--secaf-blue); margin-bottom: 4px; }
+        .dz-main { font-size: 0.9rem; font-weight: 700; color: var(--text-main); }
+        .dz-sub { font-size: 0.78rem; color: var(--text-faint); }
+
+        .verify-result { margin-top: 18px; }
+        .vr-banner {
+            display: flex; align-items: center; gap: 14px; padding: 16px 18px;
+            border-radius: var(--radius); border: 1px solid; margin-bottom: 16px;
+        }
+        .vr-banner i { font-size: 2rem; flex-shrink: 0; }
+        .vr-banner .vr-title { font-size: 1.05rem; font-weight: 800; }
+        .vr-banner .vr-desc { font-size: 0.82rem; opacity: 0.9; margin-top: 2px; }
+        .vr-ok { background: color-mix(in srgb, #16a34a 12%, transparent); border-color: color-mix(in srgb, #16a34a 35%, transparent); color: #15803d; }
+        [data-theme="dark"] .vr-ok { color: #4ade80; }
+        .vr-warn { background: color-mix(in srgb, #d97706 12%, transparent); border-color: color-mix(in srgb, #d97706 35%, transparent); color: #b45309; }
+        [data-theme="dark"] .vr-warn { color: #fbbf24; }
+        .vr-err { background: color-mix(in srgb, #dc2626 12%, transparent); border-color: color-mix(in srgb, #dc2626 35%, transparent); color: #b91c1c; }
+        [data-theme="dark"] .vr-err { color: #f87171; }
+
+        .vr-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+        .vr-stat { background: var(--bg-subtle); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 13px 15px; }
+        .vr-stat .k { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.4px; font-weight: 700; color: var(--text-faint); }
+        .vr-stat .v { font-size: 1.25rem; font-weight: 800; margin-top: 3px; color: var(--text-main); }
+        .vr-days { margin-top: 14px; font-size: 0.8rem; color: var(--text-muted); line-height: 1.6; }
+        .vr-days strong { color: var(--text-main); }
+
+        @media (max-width: 600px) { .vr-stats { grid-template-columns: 1fr; } }
+
         .basis-note {
             display: flex; gap: 12px; align-items: flex-start;
             margin-top: 20px; padding: 14px 18px;
@@ -260,7 +306,7 @@
         @media print {
             @page { margin: 1.2cm; size: A4; }
             body { background: #fff; color: #000; height: auto; overflow: visible; }
-            .topbar, .sidebar, .actions, .field-desc, .pill-info, .basis-note { display: none !important; }
+            .topbar, .sidebar, .actions, .field-desc, .pill-info, .basis-note, .verify-card { display: none !important; }
             .app-grid, .main-content { display: block; height: auto; padding: 0; }
             .res-card, .context-strip { box-shadow: none; }
             .print-header { display: block !important; margin-bottom: 22px; border-bottom: 2px solid #000; padding-bottom: 12px; }
@@ -453,6 +499,25 @@
                 </div>
             </div>
 
+            <section class="verify-card">
+                <div class="verify-head">
+                    <i class="ph ph-file-magnifying-glass"></i>
+                    <div>
+                        <h3>Já cumpri minhas horas? Confira pelo SECAF</h3>
+                        <p>Envie o PDF da sua apuração mensal do SECAF. A leitura é feita no seu próprio navegador — o arquivo não é enviado a lugar nenhum.</p>
+                    </div>
+                </div>
+
+                <label class="dropzone" id="dropzone">
+                    <input type="file" id="pdfInput" accept="application/pdf" hidden>
+                    <i class="ph ph-upload-simple"></i>
+                    <span class="dz-main">Clique para escolher o PDF do SECAF</span>
+                    <span class="dz-sub">ou arraste o arquivo aqui</span>
+                </label>
+
+                <div class="verify-result" id="verifyResult" hidden></div>
+            </section>
+
             <div class="actions">
                 <button class="btn btn-copy" onclick="copiarResumoDetalhado()">
                     <i class="ph ph-copy"></i> Copiar
@@ -504,8 +569,8 @@
             { uteis: 22, feriados: 0, total: 31, obs: "Mês cheio", lista: [] },
             { uteis: 19, feriados: 3, total: 30, obs: "03 (Paixão) · 21 (Tiradentes) · 23 (S. Jorge)", lista: [
                 { d: "03", n: "Sexta-feira Santa (feriado nacional)" }, { d: "21", n: "Tiradentes (feriado nacional)" }, { d: "23", n: "São Jorge (feriado estadual — RJ)" } ] },
-            { uteis: 20, feriados: 1, total: 31, obs: "01 (Dia Mundial do Trabalho)", lista: [
-                { d: "01", n: "Dia Mundial do Trabalho (feriado nacional)" } ] },
+            { uteis: 20, feriados: 2, total: 31, obs: "01 (Dia do Trabalho) · 29 (90 anos do IBGE)", lista: [
+                { d: "01", n: "Dia Mundial do Trabalho (feriado nacional)" }, { d: "29", n: "Aniversário de 90 anos do IBGE (liberação de expediente)" } ] },
             { uteis: 20, feriados: 2, total: 30, obs: "04 (Corpus Christi) · 05 (ponto facultativo)", lista: [
                 { d: "04", n: "Corpus Christi (ponto facultativo)" }, { d: "05", n: "Ponto facultativo" } ] },
             { uteis: 23, feriados: 0, total: 31, obs: "Mês cheio", lista: [] },
@@ -521,6 +586,10 @@
         ];
 
         const nomesMeses = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+        const abrevMeses = ["JAN", "FEV", "MAR", "ABR", "MAI", "JUN", "JUL", "AGO", "SET", "OUT", "NOV", "DEZ"];
+
+        // guarda a última meta calculada para a verificação de cumprimento
+        const estado = { metaUteis: 0, metaCorr: 0 };
 
         document.addEventListener('DOMContentLoaded', () => {
             popularSelectMeses();
@@ -550,8 +619,118 @@
             if (hoje.getFullYear() === 2026) document.getElementById('mes').value = hoje.getMonth();
 
             document.getElementById('dataImpressao').innerText = new Date().toLocaleDateString('pt-BR');
+            inicializarVerificacao();
             carregarDadosMes();
         });
+
+        // ---------- VERIFICAÇÃO DE CUMPRIMENTO (upload do SECAF) ----------
+        function inicializarVerificacao() {
+            const dz = document.getElementById('dropzone');
+            const input = document.getElementById('pdfInput');
+            if (!dz || !input) return;
+
+            input.addEventListener('change', () => { if (input.files[0]) processarPdf(input.files[0]); });
+            ['dragenter', 'dragover'].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.add('drag'); }));
+            ['dragleave', 'drop'].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.remove('drag'); }));
+            dz.addEventListener('drop', e => {
+                const f = e.dataTransfer.files[0];
+                if (f && f.type === 'application/pdf') processarPdf(f);
+            });
+        }
+
+        function minutosParaTexto(min) {
+            const sinal = min < 0 ? '-' : '';
+            min = Math.abs(Math.round(min));
+            return `${sinal}${Math.floor(min / 60)}h ${String(min % 60).padStart(2, '0')}m`;
+        }
+
+        async function processarPdf(file) {
+            const box = document.getElementById('verifyResult');
+            box.hidden = false;
+            box.innerHTML = `<div class="vr-banner"><i class="ph ph-spinner"></i><div><div class="vr-title">Lendo o PDF…</div><div class="vr-desc">${file.name}</div></div></div>`;
+            try {
+                if (!window.pdfjsLib) throw new Error('Biblioteca de leitura de PDF não carregou. Verifique a conexão e tente novamente.');
+                pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+                const buf = await file.arrayBuffer();
+                const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
+                let texto = '';
+                for (let i = 1; i <= pdf.numPages; i++) {
+                    const page = await pdf.getPage(i);
+                    const tc = await page.getTextContent();
+                    texto += tc.items.map(it => it.str).join(' ') + ' ';
+                }
+                analisarApuracao(texto, file.name);
+            } catch (err) {
+                renderErro(err.message || 'Não foi possível ler o PDF.');
+            }
+        }
+
+        function analisarApuracao(texto, nomeArquivo) {
+            // Detecta o mês pela abreviação usada nas linhas (ex.: "27MAI")
+            let mesDetectado = -1, maxOcorr = 0;
+            abrevMeses.forEach((ab, idx) => {
+                const m = texto.match(new RegExp('\\d{1,2}\\s*' + ab, 'gi'));
+                if (m && m.length > maxOcorr) { maxOcorr = m.length; mesDetectado = idx; }
+            });
+            if (mesDetectado < 0) { renderErro('Não reconheci este PDF como uma apuração mensal do SECAF.'); return; }
+
+            // Soma o "Tempo diário apurado" de cada dia (valor imediatamente antes de "Saldo no dia")
+            const re = /(\d{1,2})h(\d{2})m(?=\s*Saldo\s*no\s*dia)/gi;
+            let total = 0, diasComPresenca = 0, m;
+            while ((m = re.exec(texto)) !== null) {
+                const min = parseInt(m[1]) * 60 + parseInt(m[2]);
+                total += min;
+                if (min > 0) diasComPresenca++;
+            }
+
+            // Alinha a ferramenta ao mês detectado e usa a meta recomendada (dias úteis)
+            document.getElementById('mes').value = mesDetectado;
+            carregarDadosMes();
+            const meta = estado.metaUteis;
+            const metaMin = Math.round(meta * 60);
+            const diff = total - metaMin;
+
+            renderResultado({ mesDetectado, total, metaMin, diff, diasComPresenca, nomeArquivo });
+        }
+
+        function renderResultado(r) {
+            const box = document.getElementById('verifyResult');
+            const cumpriu = r.diff >= 0;
+            const metaZero = r.metaMin === 0;
+            const cls = metaZero ? 'vr-warn' : (cumpriu ? 'vr-ok' : 'vr-warn');
+            const icon = metaZero ? 'ph-info' : (cumpriu ? 'ph-check-circle' : 'ph-warning-circle');
+            const titulo = metaZero
+                ? 'Meta do mês é 0h (sem obrigação presencial)'
+                : (cumpriu ? 'Meta cumprida!' : 'Ainda faltam horas presenciais');
+            const desc = metaZero
+                ? `Você registrou ${minutosParaTexto(r.total)} presenciais.`
+                : (cumpriu
+                    ? `Você cumpriu ${minutosParaTexto(r.total)} — ${minutosParaTexto(r.diff)} acima da meta.`
+                    : `Faltam ${minutosParaTexto(-r.diff)} para atingir a meta do mês.`);
+
+            box.innerHTML = `
+                <div class="vr-banner ${cls}">
+                    <i class="ph ${icon}"></i>
+                    <div>
+                        <div class="vr-title">${titulo}</div>
+                        <div class="vr-desc">${desc}</div>
+                    </div>
+                </div>
+                <div class="vr-stats">
+                    <div class="vr-stat"><div class="k">Presencial realizado</div><div class="v">${minutosParaTexto(r.total)}</div></div>
+                    <div class="vr-stat"><div class="k">Meta de ${nomesMeses[r.mesDetectado]}</div><div class="v">${minutosParaTexto(r.metaMin)}</div></div>
+                    <div class="vr-stat"><div class="k">${r.diff >= 0 ? 'Excedente' : 'Faltam'}</div><div class="v">${minutosParaTexto(Math.abs(r.diff))}</div></div>
+                </div>
+                <div class="vr-days">
+                    Foram identificados <strong>${r.diasComPresenca} dia(s)</strong> com registro de presença em ${nomesMeses[r.mesDetectado]}.
+                    Meta calculada pelo método de dias úteis com os parâmetros atuais (ajuste férias/jornada ao lado se necessário).
+                </div>`;
+        }
+
+        function renderErro(msg) {
+            document.getElementById('verifyResult').innerHTML =
+                `<div class="vr-banner vr-err"><i class="ph ph-x-circle"></i><div><div class="vr-title">Não consegui ler o arquivo</div><div class="vr-desc">${msg}</div></div></div>`;
+        }
 
         function popularSelectMeses() {
             const select = document.getElementById('mes');
@@ -624,6 +803,7 @@
             const diasTrabUteis = Math.max(0, totalDiasUteis - feriasUteis);
             const fatorUteis = totalDiasUteis > 0 ? diasTrabUteis / totalDiasUteis : 0;
             const metaUteis = Math.max(0, baseAjustada * fatorUteis);
+            estado.metaUteis = metaUteis;
             atualizarCard('Tecnico', metaUteis, metaPadrao, diasTrabUteis, totalDiasUteis,
                 `(${metaPadrao} − ${totalFeriados * 8}) × ${jTxt} × (${diasTrabUteis} ÷ ${totalDiasUteis}) = <strong>${metaUteis.toFixed(2).replace('.', ',')} h</strong>`);
 
@@ -631,6 +811,7 @@
             const diasAtivos = Math.max(0, dadosBase.total - feriasCorridos);
             const fatorCorr = dadosBase.total > 0 ? diasAtivos / dadosBase.total : 0;
             const metaCorr = Math.max(0, baseAjustada * fatorCorr);
+            estado.metaCorr = metaCorr;
             atualizarCard('Pratico', metaCorr, metaPadrao, diasAtivos, dadosBase.total,
                 `(${metaPadrao} − ${totalFeriados * 8}) × ${jTxt} × (${diasAtivos} ÷ ${dadosBase.total}) = <strong>${metaCorr.toFixed(2).replace('.', ',')} h</strong>`);
         }
