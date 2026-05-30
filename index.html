@@ -535,50 +535,6 @@
                 <span class="pill-info"><i class="ph ph-info"></i> Meta proporcional ao tempo trabalhado</span>
             </div>
 
-            <section class="verify-card highlight">
-                <div class="verify-head">
-                    <i class="ph ph-file-magnifying-glass"></i>
-                    <div>
-                        <h3>Já cumpri minhas horas? Confira pelo SECAF</h3>
-                        <p>Envie o PDF da sua apuração mensal do SECAF e descubra na hora se bateu a meta. A leitura é feita no seu próprio navegador — o arquivo não é enviado a lugar nenhum.</p>
-                    </div>
-                </div>
-
-                <label class="dropzone" id="dropzone">
-                    <input type="file" id="pdfInput" accept="application/pdf" hidden>
-                    <i class="ph ph-upload-simple"></i>
-                    <span class="dz-main">Clique para escolher o PDF do SECAF</span>
-                    <span class="dz-sub">ou arraste o arquivo aqui</span>
-                </label>
-
-                <div class="verify-result" id="verifyResult" hidden></div>
-            </section>
-
-            <section class="examples-card">
-                <div class="ex-head">
-                    <i class="ph ph-graduation-cap"></i>
-                    <div>
-                        <h3>Exemplos do FAQ do IBGE</h3>
-                        <p>Entenda a regra em cada situação. Clique para carregar o exemplo na ferramenta.</p>
-                    </div>
-                </div>
-                <div class="ex-buttons">
-                    <button class="ex-btn" data-ex="Q1" onclick="carregarExemplo('Q1')">
-                        <strong><i class="ph ph-flag"></i> Feriados</strong>
-                        <span>2 feriados no mês → 48 h</span>
-                    </button>
-                    <button class="ex-btn" data-ex="Q5" onclick="carregarExemplo('Q5')">
-                        <strong><i class="ph ph-airplane-takeoff"></i> Férias</strong>
-                        <span>15 dias de férias → 32 h</span>
-                    </button>
-                    <button class="ex-btn" data-ex="Q6" onclick="carregarExemplo('Q6')">
-                        <strong><i class="ph ph-clock-countdown"></i> Jornada reduzida</strong>
-                        <span>6 h/dia + meta 32 h → 24 h</span>
-                    </button>
-                </div>
-                <div class="ex-explain" id="exExplain" hidden></div>
-            </section>
-
             <div class="results-grid">
                 <div class="res-card tec">
                     <div class="card-head">
@@ -636,6 +592,50 @@
                     <i class="ph ph-whatsapp-logo"></i> WhatsApp
                 </button>
             </div>
+
+            <section class="verify-card highlight">
+                <div class="verify-head">
+                    <i class="ph ph-file-magnifying-glass"></i>
+                    <div>
+                        <h3>Já cumpri minhas horas? Confira pelo SECAF</h3>
+                        <p>Envie o PDF da sua apuração mensal do SECAF e descubra na hora se bateu a meta. A leitura é feita no seu próprio navegador — o arquivo não é enviado a lugar nenhum.</p>
+                    </div>
+                </div>
+
+                <label class="dropzone" id="dropzone">
+                    <input type="file" id="pdfInput" accept="application/pdf" hidden>
+                    <i class="ph ph-upload-simple"></i>
+                    <span class="dz-main">Clique para escolher o PDF do SECAF</span>
+                    <span class="dz-sub">ou arraste o arquivo aqui</span>
+                </label>
+
+                <div class="verify-result" id="verifyResult" hidden></div>
+            </section>
+
+            <section class="examples-card">
+                <div class="ex-head">
+                    <i class="ph ph-graduation-cap"></i>
+                    <div>
+                        <h3>Exemplos do FAQ do IBGE</h3>
+                        <p>Entenda a regra em cada situação. Clique para carregar o exemplo na ferramenta.</p>
+                    </div>
+                </div>
+                <div class="ex-buttons">
+                    <button class="ex-btn" data-ex="Q1" onclick="carregarExemplo('Q1')">
+                        <strong><i class="ph ph-flag"></i> Feriados</strong>
+                        <span>2 feriados no mês → 48 h</span>
+                    </button>
+                    <button class="ex-btn" data-ex="Q5" onclick="carregarExemplo('Q5')">
+                        <strong><i class="ph ph-airplane-takeoff"></i> Férias</strong>
+                        <span>15 dias de férias → 32 h</span>
+                    </button>
+                    <button class="ex-btn" data-ex="Q6" onclick="carregarExemplo('Q6')">
+                        <strong><i class="ph ph-clock-countdown"></i> Jornada reduzida</strong>
+                        <span>6 h/dia + meta 32 h → 24 h</span>
+                    </button>
+                </div>
+                <div class="ex-explain" id="exExplain" hidden></div>
+            </section>
 
             <div class="basis-note">
                 <i class="ph ph-scales"></i>
