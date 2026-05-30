@@ -246,12 +246,21 @@
         .btn-zap { background: var(--bg-card); border-color: var(--border-strong); color: var(--text-main); }
         .btn-zap:hover { border-color: #1faf54; color: #1faf54; }
 
+        .basis-note {
+            display: flex; gap: 12px; align-items: flex-start;
+            margin-top: 20px; padding: 14px 18px;
+            background: var(--secaf-blue-soft); border: 1px solid var(--border);
+            border-radius: var(--radius-sm); font-size: 0.8rem; line-height: 1.55; color: var(--text-muted);
+        }
+        .basis-note i { color: var(--secaf-blue); font-size: 1.25rem; flex-shrink: 0; margin-top: 1px; }
+        .basis-note strong { color: var(--text-main); font-weight: 700; }
+
         /* ---------- PRINT ---------- */
         .print-header, .signature-area { display: none; }
         @media print {
             @page { margin: 1.2cm; size: A4; }
             body { background: #fff; color: #000; height: auto; overflow: visible; }
-            .topbar, .sidebar, .actions, .field-desc, .pill-info { display: none !important; }
+            .topbar, .sidebar, .actions, .field-desc, .pill-info, .basis-note { display: none !important; }
             .app-grid, .main-content { display: block; height: auto; padding: 0; }
             .res-card, .context-strip { box-shadow: none; }
             .print-header { display: block !important; margin-bottom: 22px; border-bottom: 2px solid #000; padding-bottom: 12px; }
@@ -328,11 +337,16 @@
             <div>
                 <div class="side-section-title"><i class="ph ph-target"></i> Parâmetros</div>
                 <div class="input-group">
-                    <label for="metaPadrao">Meta padrão</label>
+                    <label for="metaPadrao">Meta presencial mensal</label>
                     <select id="metaPadrao">
-                        <option value="64">64 h — jornada geral</option>
-                        <option value="32">32 h — jornada reduzida</option>
+                        <option value="64">64 h — padrão</option>
+                        <option value="32">32 h — presencial flexibilizada</option>
                     </select>
+                </div>
+                <div class="input-group">
+                    <label for="jornadaDiaria">Jornada diária (h)</label>
+                    <input type="number" id="jornadaDiaria" value="8" min="1" max="8" step="0.5" inputmode="decimal">
+                    <span class="field-desc">Padrão 8 h. Reduza apenas se tiver redução de jornada autorizada (ex.: 6 h).</span>
                 </div>
             </div>
 
@@ -451,6 +465,15 @@
                 </button>
             </div>
 
+            <div class="basis-note">
+                <i class="ph ph-scales"></i>
+                <div>
+                    <strong>Como a meta é calculada:</strong> (meta presencial − 8 h por feriado/ponto facultativo) × (jornada ÷ 8) × proporção de dias trabalhados.
+                    Base normativa: <strong>FAQ IBGE PGD 2.0</strong> (CRH), <strong>IN Conjunta SEGES-SGPRT/MGI nº 24/2023</strong> e Portaria IBGE nº 1.264/2024.
+                    Ferramenta de apoio ao planejamento — o registro oficial é sempre o do SECAF.
+                </div>
+            </div>
+
             <div class="signature-area">
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 50px;">
                     <div style="border-top: 1px solid #000; margin-top: 50px; padding-top: 10px; text-align: center;">
@@ -502,7 +525,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             popularSelectMeses();
 
-            const inputs = ['mes', 'metaPadrao', 'feriasCorridos', 'feriasUteis', 'totalDiasUteis', 'totalFeriados'];
+            const inputs = ['mes', 'metaPadrao', 'jornadaDiaria', 'feriasCorridos', 'feriasUteis', 'totalDiasUteis', 'totalFeriados'];
             inputs.forEach(id => {
                 document.getElementById(id).addEventListener('input', () => {
                     if (id === 'mes') carregarDadosMes();
@@ -575,6 +598,7 @@
             const mesIndex = parseInt(document.getElementById('mes').value);
             const dadosBase = calendario2026[mesIndex];
             const metaPadrao = parseInt(document.getElementById('metaPadrao').value);
+            const jornada = clamp(parseFloat(document.getElementById('jornadaDiaria').value) || 8, 0, 8);
 
             const totalDiasUteis = Math.max(0, parseInt(document.getElementById('totalDiasUteis').value) || 0);
             const totalFeriados = Math.max(0, parseInt(document.getElementById('totalFeriados').value) || 0);
@@ -582,27 +606,37 @@
             let feriasCorridos = Math.max(0, parseInt(document.getElementById('feriasCorridos').value) || 0);
             let feriasUteis = Math.max(0, parseInt(document.getElementById('feriasUteis').value) || 0);
             feriasUteis = Math.min(feriasUteis, feriasCorridos, totalDiasUteis);
+            feriasCorridos = Math.min(feriasCorridos, dadosBase.total);
 
             atualizarSidebar();
 
-            const credito = totalFeriados * 8;
+            // Modelo oficial (FAQ IBGE PGD 2.0):
+            //   meta = (metaBase − feriados×8) × (jornada÷8) × fatorAfastamento
+            // - feriado/ponto facultativo em dia útil desconta 8h (FAQ Q1)
+            // - redução de jornada aplica proporção jornada/8 (FAQ Q6)
+            // - férias/licenças aplicam regra de três (FAQ Q5)
+            const baseFeriado = Math.max(0, metaPadrao - totalFeriados * 8);
+            const fatorJornada = jornada / 8;
+            const baseAjustada = baseFeriado * fatorJornada;
+            const jTxt = formatNum(fatorJornada);
 
-            // CÁLCULO POR DIAS ÚTEIS
-            const diasTrabalhaveis = Math.max(0, totalDiasUteis - feriasUteis);
-            const propTecnica = totalDiasUteis > 0 ? diasTrabalhaveis / totalDiasUteis : 0;
-            let metaTecnica = (propTecnica * metaPadrao) - credito;
-            if (metaTecnica < 0) metaTecnica = 0;
-            atualizarCard('Tecnico', metaTecnica, metaPadrao, diasTrabalhaveis, totalDiasUteis,
-                `(${diasTrabalhaveis} ÷ ${totalDiasUteis}) × ${metaPadrao} − ${credito} = <strong>${metaTecnica.toFixed(2)} h</strong>`);
+            // MÉTODO A — por dias úteis (recomendado, mais preciso)
+            const diasTrabUteis = Math.max(0, totalDiasUteis - feriasUteis);
+            const fatorUteis = totalDiasUteis > 0 ? diasTrabUteis / totalDiasUteis : 0;
+            const metaUteis = Math.max(0, baseAjustada * fatorUteis);
+            atualizarCard('Tecnico', metaUteis, metaPadrao, diasTrabUteis, totalDiasUteis,
+                `(${metaPadrao} − ${totalFeriados * 8}) × ${jTxt} × (${diasTrabUteis} ÷ ${totalDiasUteis}) = <strong>${metaUteis.toFixed(2).replace('.', ',')} h</strong>`);
 
-            // CÁLCULO POR DIAS CORRIDOS
+            // MÉTODO B — por dias corridos (regra de três simples, como no FAQ)
             const diasAtivos = Math.max(0, dadosBase.total - feriasCorridos);
-            const propPratica = dadosBase.total > 0 ? diasAtivos / dadosBase.total : 0;
-            let metaPratica = (propPratica * metaPadrao) - credito;
-            if (metaPratica < 0) metaPratica = 0;
-            atualizarCard('Pratico', metaPratica, metaPadrao, diasAtivos, dadosBase.total,
-                `(${diasAtivos} ÷ ${dadosBase.total}) × ${metaPadrao} − ${credito} = <strong>${metaPratica.toFixed(2)} h</strong>`);
+            const fatorCorr = dadosBase.total > 0 ? diasAtivos / dadosBase.total : 0;
+            const metaCorr = Math.max(0, baseAjustada * fatorCorr);
+            atualizarCard('Pratico', metaCorr, metaPadrao, diasAtivos, dadosBase.total,
+                `(${metaPadrao} − ${totalFeriados * 8}) × ${jTxt} × (${diasAtivos} ÷ ${dadosBase.total}) = <strong>${metaCorr.toFixed(2).replace('.', ',')} h</strong>`);
         }
+
+        function clamp(v, min, max) { return Math.min(max, Math.max(min, v)); }
+        function formatNum(n) { return Number.isInteger(n) ? String(n) : n.toFixed(2).replace('.', ','); }
 
         function atualizarCard(tipo, valor, metaMax, diasAtivos, diasTotal, formulaHTML) {
             document.getElementById(`res${tipo}`).innerText = formatarHoras(valor);
@@ -630,6 +664,7 @@
         function gerarTextoDetalhado() {
             const mes = document.getElementById('displayMesNome').innerText;
             const meta = document.getElementById('metaPadrao').options[document.getElementById('metaPadrao').selectedIndex].text;
+            const jornada = document.getElementById('jornadaDiaria').value;
             const diasUteis = document.getElementById('totalDiasUteis').value;
             const feriados = document.getElementById('totalFeriados').value;
             const feriasC = document.getElementById('feriasCorridos').value;
@@ -639,16 +674,17 @@
 
             return `📋 *RELATÓRIO DE METAS PGD — ${mes.toUpperCase()} 2026*\n\n` +
                    `⚙️ *Parâmetros do mês:*\n` +
-                   `• Meta padrão: ${meta}\n` +
+                   `• Meta presencial: ${meta}\n` +
+                   `• Jornada diária: ${jornada} h\n` +
                    `• Dias úteis no mês: ${diasUteis}\n` +
-                   `• Feriados descontados: ${feriados}\n\n` +
+                   `• Feriados/pontos facultativos: ${feriados} (−${feriados * 8} h)\n\n` +
                    `🏖️ *Afastamentos (férias/licenças):*\n` +
                    `• Dias totais fora: ${feriasC}\n` +
                    `• Impacto em dias úteis: ${feriasU}\n\n` +
-                   `🎯 *META FINAL:*\n` +
+                   `🎯 *META PRESENCIAL A CUMPRIR:*\n` +
                    `✅ Por dias úteis: *${resTec}*  (recomendado)\n` +
-                   `☑️ Por dias corridos: *${resPra}*  (alternativo)\n\n` +
-                   `_Gerado em ${new Date().toLocaleDateString('pt-BR')} · ferramenta de apoio, valide no SECAF._`;
+                   `☑️ Por dias corridos: *${resPra}*  (regra de três)\n\n` +
+                   `_Base: FAQ IBGE PGD 2.0 / IN 24-2023. Ferramenta de apoio — valide no SECAF._`;
         }
 
         function copiarResumoDetalhado() {
