@@ -69,6 +69,7 @@
             margin: 0; font-family: 'Open Sans', system-ui, sans-serif;
             background: var(--bg-app); color: var(--text-main);
             height: 100vh; overflow: hidden;
+            display: flex; flex-direction: column;
             -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
             transition: background 0.25s ease, color 0.25s ease;
         }
@@ -78,8 +79,16 @@
             height: var(--topbar-h); background: var(--bg-bar);
             border-bottom: 1px solid var(--border);
             display: flex; align-items: center; justify-content: space-between;
-            padding: 0 22px; position: relative; z-index: 20;
+            padding: 0 22px; position: relative; z-index: 20; flex-shrink: 0;
         }
+        .disclaimer-bar {
+            flex-shrink: 0; display: flex; align-items: center; gap: 9px;
+            padding: 8px 22px; font-size: 0.78rem; line-height: 1.35;
+            background: #fff7ed; color: #9a3412; border-bottom: 1px solid #fed7aa;
+        }
+        .disclaimer-bar i { font-size: 1.05rem; flex-shrink: 0; }
+        .disclaimer-bar strong { font-weight: 700; }
+        [data-theme="dark"] .disclaimer-bar { background: #2a1c0e; color: #fbbf24; border-bottom-color: #463114; }
         .topbar-brand { display: flex; align-items: center; gap: 10px; }
         .wave-mark { width: 30px; height: 30px; flex-shrink: 0; }
         .topbar-brand .name { font-size: 1.15rem; font-weight: 800; color: var(--secaf-blue); letter-spacing: -0.3px; }
@@ -98,7 +107,7 @@
         }
 
         /* ---------- LAYOUT ---------- */
-        .app-grid { display: grid; grid-template-columns: var(--sidebar-w) 1fr; height: calc(100vh - var(--topbar-h)); }
+        .app-grid { display: grid; grid-template-columns: var(--sidebar-w) 1fr; flex: 1; min-height: 0; }
 
         /* ---------- SIDEBAR ---------- */
         .sidebar {
@@ -247,10 +256,47 @@
         .btn-zap { background: var(--bg-card); border-color: var(--border-strong); color: var(--text-main); }
         .btn-zap:hover { border-color: #1faf54; color: #1faf54; }
 
+        /* ---------- EXEMPLOS DO FAQ ---------- */
+        .examples-card {
+            margin-top: 22px; background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: var(--radius); box-shadow: var(--shadow); padding: 20px;
+        }
+        .ex-head { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 15px; }
+        .ex-head > i { color: var(--secaf-blue); font-size: 1.5rem; flex-shrink: 0; }
+        .ex-head h3 { margin: 0 0 2px; font-size: 1rem; font-weight: 700; }
+        .ex-head p { margin: 0; font-size: 0.8rem; color: var(--text-muted); line-height: 1.45; }
+        .ex-buttons { display: grid; grid-template-columns: repeat(3, 1fr); gap: 11px; }
+        .ex-btn {
+            display: flex; flex-direction: column; gap: 3px; text-align: left;
+            padding: 13px 15px; border: 1px solid var(--border-strong); border-radius: var(--radius-sm);
+            background: var(--bg-subtle); cursor: pointer; font-family: inherit;
+            transition: border-color 0.15s ease, background 0.15s ease, transform 0.08s ease;
+        }
+        .ex-btn:hover { border-color: var(--secaf-blue); background: var(--secaf-blue-soft); }
+        .ex-btn:active { transform: translateY(1px); }
+        .ex-btn.active { border-color: var(--secaf-blue); background: var(--secaf-blue-soft); box-shadow: inset 0 0 0 1px var(--secaf-blue); }
+        .ex-btn strong { font-size: 0.88rem; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 6px; }
+        .ex-btn strong i { color: var(--secaf-blue); font-size: 1rem; }
+        .ex-btn span { font-size: 0.76rem; color: var(--text-muted); }
+        .ex-explain {
+            margin-top: 15px; padding: 15px 16px; background: var(--secaf-blue-soft);
+            border: 1px solid var(--border); border-radius: var(--radius-sm);
+        }
+        .ex-exp-title { font-size: 0.9rem; font-weight: 800; color: var(--secaf-blue); margin-bottom: 7px; }
+        .ex-explain p { margin: 0 0 9px; font-size: 0.83rem; color: var(--text-muted); line-height: 1.55; }
+        .ex-exp-conta { font-family: 'Roboto Mono', monospace; font-size: 0.82rem; color: var(--text-main); }
+        .ex-exp-conta strong { color: var(--secaf-blue); }
+        .ex-exp-nota { margin-top: 10px; font-size: 0.75rem; color: var(--text-faint); display: flex; align-items: center; gap: 6px; }
+
         /* ---------- VERIFICAÇÃO (upload SECAF) ---------- */
         .verify-card {
             margin-top: 22px; background: var(--bg-card); border: 1px solid var(--border);
             border-radius: var(--radius); box-shadow: var(--shadow); padding: 22px;
+        }
+        .verify-card.highlight {
+            border: 1.5px solid var(--secaf-blue);
+            background: linear-gradient(180deg, var(--secaf-blue-soft), var(--bg-card) 70%);
+            box-shadow: 0 4px 20px -8px color-mix(in srgb, var(--secaf-blue) 45%, transparent);
         }
         .verify-head { display: flex; gap: 13px; align-items: flex-start; margin-bottom: 18px; }
         .verify-head > i { color: var(--secaf-blue); font-size: 1.7rem; flex-shrink: 0; }
@@ -317,17 +363,48 @@
         }
 
         /* ---------- RESPONSIVE ---------- */
+        /* Tablet e abaixo: empilha a sidebar acima do conteúdo */
         @media (max-width: 980px) {
             body { height: auto; overflow: visible; }
-            .app-grid { grid-template-columns: 1fr; height: auto; }
-            .sidebar { border-right: none; border-bottom: 1px solid var(--border); }
-            .side-foot { margin-top: 0; }
+            .app-grid { grid-template-columns: 1fr; }
+            .sidebar { border-right: none; border-bottom: 1px solid var(--border); overflow: visible; }
+            .side-foot { margin-top: 8px; }
             .topbar-right .ctx { display: none; }
+            .main-content { overflow: visible; }
         }
-        @media (max-width: 600px) {
+        /* Tablet retrato: sidebar em duas colunas para economizar altura */
+        @media (max-width: 980px) and (min-width: 641px) {
+            .sidebar {
+                display: grid; grid-template-columns: 1fr 1fr; gap: 16px 24px; align-items: start;
+            }
+            .month-select, .stat-uteis, .feriados-block, .side-divider { grid-column: 1 / -1; }
+            .side-foot { grid-column: 1 / -1; }
+        }
+        /* Celular */
+        @media (max-width: 640px) {
+            .topbar { padding: 0 14px; }
+            .topbar-tag { display: none; }
+            .topbar-brand .name { font-size: 1.05rem; }
+            .disclaimer-bar { padding: 8px 14px; font-size: 0.74rem; }
+            .main-content { padding: 16px 14px; }
+            .main-head h2 { font-size: 1.4rem; }
+            .main-head .pill-info { display: none; }
+            .context-strip { padding: 12px 15px; gap: 6px 18px; }
+            .context-strip .ci { font-size: 0.78rem; }
             .results-grid { grid-template-columns: 1fr; }
             .actions { grid-template-columns: 1fr; }
-            .main-content { padding: 18px 16px; }
+            .ex-buttons { grid-template-columns: 1fr; }
+            .vr-stats { grid-template-columns: 1fr; }
+            .examples-card, .verify-card, .params { padding: 16px; }
+            .verify-head > i, .ex-head > i { font-size: 1.4rem; }
+            .vr-banner { flex-direction: row; }
+        }
+        /* Celular pequeno */
+        @media (max-width: 380px) {
+            .stat-uteis .num { font-size: 1.8rem; }
+            .chart-wrap { width: 116px; height: 116px; }
+            .main-head h2 { font-size: 1.25rem; }
+            .dropzone { padding: 20px 12px; }
         }
     </style>
 </head>
@@ -359,6 +436,11 @@
             <div class="avatar"><i class="ph ph-user"></i></div>
         </div>
     </header>
+
+    <div class="disclaimer-bar">
+        <i class="ph ph-warning"></i>
+        <span><strong>Ferramenta não oficial</strong>, desenvolvida por servidor para apoio ao planejamento. Não substitui o SECAF — em caso de dúvida, confirme com o seu RH.</span>
+    </div>
 
     <div class="app-grid">
         <!-- SIDEBAR estilo SECAF -->
@@ -432,7 +514,7 @@
                         <span class="slider"></span>
                     </label>
                 </div>
-                <div class="credit">Desenvolvido por <strong>Adriel</strong></div>
+                <div class="credit">Desenvolvido por <strong>Claude (IA)</strong></div>
             </div>
         </aside>
 
@@ -452,6 +534,50 @@
                 </h2>
                 <span class="pill-info"><i class="ph ph-info"></i> Meta proporcional ao tempo trabalhado</span>
             </div>
+
+            <section class="verify-card highlight">
+                <div class="verify-head">
+                    <i class="ph ph-file-magnifying-glass"></i>
+                    <div>
+                        <h3>Já cumpri minhas horas? Confira pelo SECAF</h3>
+                        <p>Envie o PDF da sua apuração mensal do SECAF e descubra na hora se bateu a meta. A leitura é feita no seu próprio navegador — o arquivo não é enviado a lugar nenhum.</p>
+                    </div>
+                </div>
+
+                <label class="dropzone" id="dropzone">
+                    <input type="file" id="pdfInput" accept="application/pdf" hidden>
+                    <i class="ph ph-upload-simple"></i>
+                    <span class="dz-main">Clique para escolher o PDF do SECAF</span>
+                    <span class="dz-sub">ou arraste o arquivo aqui</span>
+                </label>
+
+                <div class="verify-result" id="verifyResult" hidden></div>
+            </section>
+
+            <section class="examples-card">
+                <div class="ex-head">
+                    <i class="ph ph-graduation-cap"></i>
+                    <div>
+                        <h3>Exemplos do FAQ do IBGE</h3>
+                        <p>Entenda a regra em cada situação. Clique para carregar o exemplo na ferramenta.</p>
+                    </div>
+                </div>
+                <div class="ex-buttons">
+                    <button class="ex-btn" data-ex="Q1" onclick="carregarExemplo('Q1')">
+                        <strong><i class="ph ph-flag"></i> Feriados</strong>
+                        <span>2 feriados no mês → 48 h</span>
+                    </button>
+                    <button class="ex-btn" data-ex="Q5" onclick="carregarExemplo('Q5')">
+                        <strong><i class="ph ph-airplane-takeoff"></i> Férias</strong>
+                        <span>15 dias de férias → 32 h</span>
+                    </button>
+                    <button class="ex-btn" data-ex="Q6" onclick="carregarExemplo('Q6')">
+                        <strong><i class="ph ph-clock-countdown"></i> Jornada reduzida</strong>
+                        <span>6 h/dia + meta 32 h → 24 h</span>
+                    </button>
+                </div>
+                <div class="ex-explain" id="exExplain" hidden></div>
+            </section>
 
             <div class="results-grid">
                 <div class="res-card tec">
@@ -499,25 +625,6 @@
                 </div>
             </div>
 
-            <section class="verify-card">
-                <div class="verify-head">
-                    <i class="ph ph-file-magnifying-glass"></i>
-                    <div>
-                        <h3>Já cumpri minhas horas? Confira pelo SECAF</h3>
-                        <p>Envie o PDF da sua apuração mensal do SECAF. A leitura é feita no seu próprio navegador — o arquivo não é enviado a lugar nenhum.</p>
-                    </div>
-                </div>
-
-                <label class="dropzone" id="dropzone">
-                    <input type="file" id="pdfInput" accept="application/pdf" hidden>
-                    <i class="ph ph-upload-simple"></i>
-                    <span class="dz-main">Clique para escolher o PDF do SECAF</span>
-                    <span class="dz-sub">ou arraste o arquivo aqui</span>
-                </label>
-
-                <div class="verify-result" id="verifyResult" hidden></div>
-            </section>
-
             <div class="actions">
                 <button class="btn btn-copy" onclick="copiarResumoDetalhado()">
                     <i class="ph ph-copy"></i> Copiar
@@ -563,14 +670,14 @@
         // lista  = feriados para exibição [{d, n, dom?}]  (dom = caiu em fim de semana)
         const calendario2026 = [
             { uteis: 20, feriados: 2, total: 31, obs: "01 (Confr. Universal) · 20 (S. Sebastião)", lista: [
-                { d: "01", n: "Confraternização Universal (feriado nacional)" }, { d: "20", n: "São Sebastião (feriado municipal — Rio)" } ] },
-            { uteis: 18, feriados: 2, total: 28, obs: "16 e 17 (Carnaval)", lista: [
-                { d: "16", n: "Carnaval (ponto facultativo)" }, { d: "17", n: "Carnaval (ponto facultativo)" }, { d: "18", n: "Quarta-feira de Cinzas (a partir das 14h)" } ] },
+                { d: "01", n: "Confraternização Universal (feriado nacional)" }, { d: "20", n: "Dia de São Sebastião (feriado municipal no RJ)" } ] },
+            { uteis: 17, feriados: 3, total: 28, obs: "16 e 17 (Carnaval) · 18 (Cinzas)", lista: [
+                { d: "16", n: "Carnaval (ponto facultativo)" }, { d: "17", n: "Carnaval (ponto facultativo)" }, { d: "18", n: "Quarta-feira de Cinzas (não haverá expediente)" } ] },
             { uteis: 22, feriados: 0, total: 31, obs: "Mês cheio", lista: [] },
-            { uteis: 19, feriados: 3, total: 30, obs: "03 (Paixão) · 21 (Tiradentes) · 23 (S. Jorge)", lista: [
-                { d: "03", n: "Sexta-feira Santa (feriado nacional)" }, { d: "21", n: "Tiradentes (feriado nacional)" }, { d: "23", n: "São Jorge (feriado estadual — RJ)" } ] },
-            { uteis: 20, feriados: 2, total: 31, obs: "01 (Dia do Trabalho) · 29 (90 anos do IBGE)", lista: [
-                { d: "01", n: "Dia Mundial do Trabalho (feriado nacional)" }, { d: "29", n: "Aniversário de 90 anos do IBGE (liberação de expediente)" } ] },
+            { uteis: 18, feriados: 4, total: 30, obs: "03 (Paixão) · 20 (facultativo) · 21 (Tiradentes) · 23 (S. Jorge)", lista: [
+                { d: "03", n: "Paixão de Cristo (feriado nacional)" }, { d: "20", n: "Ponto facultativo" }, { d: "21", n: "Tiradentes (feriado nacional)" }, { d: "23", n: "Dia de São Jorge (feriado estadual no RJ)" } ] },
+            { uteis: 20, feriados: 1, total: 31, obs: "01 (Dia Mundial do Trabalho)", lista: [
+                { d: "01", n: "Dia Mundial do Trabalho (feriado nacional)" } ] },
             { uteis: 20, feriados: 2, total: 30, obs: "04 (Corpus Christi) · 05 (ponto facultativo)", lista: [
                 { d: "04", n: "Corpus Christi (ponto facultativo)" }, { d: "05", n: "Ponto facultativo" } ] },
             { uteis: 23, feriados: 0, total: 31, obs: "Mês cheio", lista: [] },
@@ -879,6 +986,46 @@
 
         function compartilharWhatsappDetalhado() {
             window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(gerarTextoDetalhado())}`, '_blank');
+        }
+
+        // ---------- EXEMPLOS DO FAQ ----------
+        const exemplosFAQ = {
+            Q1: { mes: 0, meta: 64, jornada: 8, fc: 0, fu: 0,
+                titulo: 'Q1 · Feriado e ponto facultativo',
+                regra: 'Cada feriado ou ponto facultativo em dia útil desconta 8 h da meta presencial do mês.',
+                conta: 'Janeiro tem 2 feriados → 64 h − (2 × 8 h) = <strong>48 h</strong>.' },
+            Q5: { mes: 8, meta: 64, jornada: 8, fc: 15, fu: 10, ovUteis: 20, ovFeriados: 0,
+                titulo: 'Q5 · Férias (regra de três)',
+                regra: 'Férias e licenças reduzem a meta por proporção (regra de três) sobre os dias do período.',
+                conta: '15 dias de férias num mês de 30 dias → 64 h × (15 ÷ 30) = <strong>32 h</strong>.',
+                nota: 'Exemplo didático sem feriados, como ilustra o FAQ.' },
+            Q6: { mes: 6, meta: 32, jornada: 6, fc: 0, fu: 0,
+                titulo: 'Q6 · Redução de jornada',
+                regra: 'Redução de jornada autorizada multiplica a meta pela proporção jornada ÷ 8 h.',
+                conta: 'Jornada de 6 h com meta flexibilizada de 32 h → 32 h × (6 ÷ 8) = <strong>24 h</strong>.' }
+        };
+
+        function carregarExemplo(q) {
+            const ex = exemplosFAQ[q];
+            if (!ex) return;
+            document.getElementById('mes').value = ex.mes;
+            carregarDadosMes();
+            document.getElementById('metaPadrao').value = ex.meta;
+            document.getElementById('jornadaDiaria').value = ex.jornada;
+            document.getElementById('feriasCorridos').value = ex.fc;
+            document.getElementById('feriasUteis').value = ex.fu;
+            if (ex.ovUteis != null) document.getElementById('totalDiasUteis').value = ex.ovUteis;
+            if (ex.ovFeriados != null) document.getElementById('totalFeriados').value = ex.ovFeriados;
+            calcular();
+
+            document.querySelectorAll('.ex-btn').forEach(b => b.classList.toggle('active', b.dataset.ex === q));
+            const exp = document.getElementById('exExplain');
+            exp.hidden = false;
+            exp.innerHTML = `<div class="ex-exp-title">${ex.titulo}</div>` +
+                `<p>${ex.regra}</p>` +
+                `<div class="ex-exp-conta">${ex.conta}</div>` +
+                (ex.nota ? `<div class="ex-exp-nota"><i class="ph ph-info"></i> ${ex.nota}</div>` : '');
+            exp.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
         }
     </script>
 </body>
