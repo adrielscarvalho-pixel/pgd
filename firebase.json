@@ -6,6 +6,8 @@
       ".firebaserc",
       "**/.git/**",
       "**/node_modules/**",
+      "**/.claude/**",
+      "**/*.pdf",
       "README.md"
     ],
     "cleanUrls": true,
